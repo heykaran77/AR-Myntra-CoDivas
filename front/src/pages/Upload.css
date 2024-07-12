@@ -1,0 +1,20 @@
+.upload
+{
+    width: 10vw !important;
+    background-color: rgb(30,144,255);
+    border-radius: 1em;
+    height: 8vh;
+    margin-top: 1em;
+    margin-right: 2em;
+    color: rgb(255, 255, 255);
+    font-size: larger;
+    font-weight: bolder;
+    
+}
+
+.upload:hover
+{
+    color: rgb(30,144,255);
+    background-color: white;
+    border: 2px black solid !important;
+}
