@@ -1,24 +1,28 @@
 import { Button } from '@mui/base';
 import { Grid, Paper, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { FileUploader } from "react-drag-drop-files";
 import './Upload.css';
 import { Link ,useNavigate} from 'react-router-dom';
-
+import { ImageContext } from '../context/ImageContext';
+import axios from 'axios'
 const fileTypes = ["JPG", "PNG"];
 
 const Upload = () => {
-    const [file, setFile] = useState(null);
-    const [image, setImage] = useState(null);
+    const {image,uploadImage,file,setFile} = useContext(ImageContext)
+
+    
     const navigate = useNavigate()
 
     const handleChange = (file) => {
         setFile(file);
+        console.log(file)
 
         const reader = new FileReader();
         reader.onload = (e) => {
-            setImage(e.target.result);
+            uploadImage(e.target.result);
+
         };
         reader.readAsDataURL(file);
     };
@@ -27,13 +31,22 @@ const Upload = () => {
         console.log('Submitting the file:', file);
         const formData = new FormData();
         formData.append('file', file);
-
-        navigate('/catalog')
-        
-        
-        
+    
+        axios.post('http://localhost:8000/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then(response => {
+            console.log('File uploaded successfully:', response.data);
+ 
+            navigate('/catalog');
+        })
+        .catch(error => {
+            console.error('Error uploading file:', error);
+            navigate('/catalog');
+        });
     };
-
     return (
         <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} className='bg-blue-100 min-h-screen'>
             <Paper elevation={3} style={{ width: '45vw', padding: '2em', borderRadius: '2em', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
