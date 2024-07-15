@@ -7,13 +7,14 @@ import { useState } from 'react';
 import { ImageContext } from '../context/ImageContext';
 import { useEffect, useContext } from 'react';
 import axios from 'axios'
-
+import x from './rag.jpeg'
 
 const Visualise = () => {
   const { responseImages,setResponseImages } = useContext(ImageContext);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [feedbackArray, setFeedbackArray] = useState([]);
   const [search,setSearch] = useState(null);
+  
 
   const handleClick = (feedback) => {
     if (currentIndex < responseImages.length) {
@@ -41,16 +42,19 @@ const Visualise = () => {
 
   const handleSearch = () =>
   {
-    axios.post('http://localhost:8000/search', { search:search })
-        .then(response => {
-          console.log('Feedback submitted:', response.data);
-          setResponseImages(response.data.images); 
-          setFeedbackArray([]);
-          setCurrentIndex(0);
-        })
-        .catch(error => {
-          console.error('Error submitting feedback:', error);
-        });   
+    // axios.post('http://localhost:8000/search', { search:search })
+    //     .then(response => {
+    //       console.log('Feedback submitted:', response.data);
+    //       setResponseImages(response.data.images); 
+    //       setFeedbackArray([]);
+    //       setCurrentIndex(0);
+    //     })
+    //     .catch(error => {
+    //       console.error('Error submitting feedback:', error);
+    //     });   
+    setResponseImages([x])
+    setCurrentIndex(0)
+
   }
 
   const handleChange = (e) =>
@@ -62,12 +66,12 @@ const Visualise = () => {
     <Grid container className='h-screen'>
       <Grid item xs={12}>
         <AppBar className='bg-blue-100 h-14' sx={{ backgroundColor: 'rgb(219 234 254 / var(--tw-bg-opacity))' }}>
-          <form className="flex items-center max-w-md mx-auto mt-1 mb-1">
+          <form className="flex items-center max-w-sm mx-auto mt-1 mb-1">
             <div className="relative w-full">
               <input
                 type="text"
                 id="simple-search"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-4 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Search ..."
                 required
                 onChange={handleChange}
