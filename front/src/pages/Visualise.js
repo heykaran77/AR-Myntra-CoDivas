@@ -8,6 +8,7 @@ import { ImageContext } from '../context/ImageContext';
 import { useEffect, useContext } from 'react';
 import axios from 'axios'
 
+
 const Visualise = () => {
   const { responseImages,setResponseImages } = useContext(ImageContext);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -36,6 +37,7 @@ const Visualise = () => {
   };
 
   const currentImage = responseImages[currentIndex];
+  console.log(currentImage)
 
   const handleSearch = () =>
   {
@@ -98,12 +100,12 @@ const Visualise = () => {
           </Grid>
 
           <Grid item lg={3} md={3} sm={8} xs={8} className='bg-blue-100 flex justify-center items-center' sx={{ height: '80vh', borderRadius: '1em' }}>
-            {currentImage ? (
-              <img src={currentImage} alt="Current" className="w-full h-full object-contain" />
-            ) : (
-              <p>Loading...</p>
-            )}
-          </Grid>
+  {currentImage ? (
+    <img src={currentImage} alt="Current" className="w-full h-full object-cover" style={{ borderRadius: '1em' }} />
+  ) : (
+    <p>Loading...</p>
+  )}
+</Grid>
 
           <Grid item lg={4.5} md={4.5} sm={4} xs={4} className='flex justify-center items-center'>
             <button onClick={() => handleClick('Positive')}>
