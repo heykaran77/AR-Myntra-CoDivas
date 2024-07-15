@@ -8,10 +8,11 @@ Today, most of the online shoppers are between the age bracket of 18-40, and thi
 
 To address these common issues, we aim to leverage the technological advancements Myntra has made in image search, as well as its advanced recommendation system, by incorporating our own innovative technologies in the following ways:
 
-- We propose to develop an interactive platform that helps users visualise their choice of clothing on themselves.
-- We will also provide visualizations of complementary outfit elements. For example, when a user selects a top, we will also show how different shoes, pants, and other accessories would look with it.
+- We developed an interactive platform prototype that helps users visualise their choice of clothing on themselves.
+- This prototype also provides visualizations of complementary outfit elements. For example, when a user selects a top, we will also show how different shoes, pants, and other accessories would look with it.
 - This is implemented through identification of current trends while keeping in mind user preferences and recommending the outfits accordingly.
-- Swiping left and right will help update the internal memory, allowing the platform to refine recommendations and suggest alternative items that better match the user's preferences.
+- Clicking ✔️ or ❌will help update the internal memory, allowing the platform to refine recommendations and suggest alternative items that better match the user's preferences.
+
 
 ## Installation & Usage
 
