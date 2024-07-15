@@ -4,14 +4,14 @@ import sqlite3
 import os
 from rag import get_images_using_llm, viton_api
 from recommendation import get_top_products
-from flask_cors import CORS
 from fastapi.middleware.cors import CORSMiddleware
+
+
 app = FastAPI()
 
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    "https://your-production-app-url.com",
 ]
 
 app.add_middleware(
@@ -70,21 +70,21 @@ def get_recommendations(data: dict):
 
 
 @app.post("/take_user_image")
-async def get_user_image(image: UploadFile = File(...)):
+async def get_user_image(file: UploadFile = File(...)):
     """Endpoint to upload an image and save it to the local folder"""
     try:
         # Ensure the uploaded file is an image
-        if image.content_type not in ["image/jpeg", "image/png", "image/gif"]:
+        if file.content_type not in ["image/jpeg", "image/png", "image/gif"]:
             raise HTTPException(status_code=400, detail="Unsupported file type.")
 
         # Define the path where the image will be saved
-        image_path = os.path.join(UPLOAD_DIR, image.filename)
+        image_path = os.path.join(UPLOAD_DIR, file.filename)
 
         # Write the uploaded file to the specified path
         with open(image_path, "wb") as buffer:
-            buffer.write(await image.read())
+            buffer.write(await file.read())
 
-        return {"filename": image.filename, "path": image_path}
+        return {"filename": file.filename, "path": image_path}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error uploading image: {str(e)}")
@@ -107,8 +107,6 @@ def get_myntra_data():
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching data: {str(e)}")
-
-
 
 
 if __name__ == "__main__":
