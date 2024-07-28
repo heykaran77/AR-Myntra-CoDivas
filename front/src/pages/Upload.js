@@ -32,20 +32,20 @@ const Upload = () => {
         const formData = new FormData();
         formData.append('file', file);
     
-        // axios.post('http://localhost:8000/take_user_image', formData, {
-        //     headers: {
-        //         'Content-Type': 'multipart/form-data'
-        //     }
-        // })
-        // .then(response => {
-        //     console.log('File uploaded successfully:', response.data);
+        axios.post('http://localhost:8000/take_user_image', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then(response => {
+            console.log('File uploaded successfully:', response.data);
  
-        //     navigate('/catalog');
-        // })
-        // .catch(error => {
-        //     console.error('Error uploading file:', error);
-        //     navigate('/catalog');
-        // });
+            navigate('/catalog');
+        })
+        .catch(error => {
+            console.error('Error uploading file:', error);
+            navigate('/catalog');
+        });
         navigate('/catalog')
     };
     return (
