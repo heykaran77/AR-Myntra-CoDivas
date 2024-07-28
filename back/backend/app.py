@@ -5,6 +5,7 @@ import os
 from rag import get_images_using_llm, viton_api
 from recommendation import get_top_products
 from fastapi.middleware.cors import CORSMiddleware
+import asyncio
 
 
 app = FastAPI()
@@ -34,7 +35,7 @@ def get_images(data: dict):
     category_1= categories[0]
     print(category_1)
     
-    final_image = viton_api(image_1, category_1)
+    final_image = viton_api(image_1, category_1) # along with these parameters, we can also pass the user image
     
     try:
         image_2 = images[1]
@@ -48,7 +49,7 @@ def get_images(data: dict):
 
 
 @app.post("/get_recommendations")
-def get_recommendations(data: dict):
+async def get_recommendations(data: dict):
     name = data["name"]
     product_id = data["product_id"]
     main_category = data["main_category"]
@@ -66,7 +67,33 @@ def get_recommendations(data: dict):
         
     trendy_products = get_top_products(recommended_category, target_audience)
     
-    pass
+    seasonal_top_product = trendy_products["seasonal_top_products"][0]
+    fashion_trend_product = trendy_products["fashion_trend_products"][0]
+    
+    tasks = []
+
+    if seasonal_top_product["main_category"] == "Top Wear":
+        tasks.append(asyncio.to_thread(viton_api, seasonal_top_product["img"], "Upper-body"))
+    elif seasonal_top_product["main_category"] == "Bottom Wear":
+        tasks.append(asyncio.to_thread(viton_api, seasonal_top_product["img"], "Lower-body"))
+    elif seasonal_top_product["main_category"] == "Dress (Full Length)":
+        tasks.append(asyncio.to_thread(viton_api, seasonal_top_product["img"], "Dress"))
+        
+    if fashion_trend_product["main_category"] == "Top Wear":
+        tasks.append(asyncio.to_thread(viton_api, fashion_trend_product["img"], "Upper-body"))
+    elif fashion_trend_product["main_category"] == "Bottom Wear":
+        tasks.append(asyncio.to_thread(viton_api, fashion_trend_product["img"], "Lower-body"))
+    elif fashion_trend_product["main_category"] == "Dress (Full Length)":
+        tasks.append(asyncio.to_thread(viton_api, fashion_trend_product["img"], "Dress"))
+    
+    results = await asyncio.gather(*tasks)
+    
+    fitted_seasonal_top_product, fitted_fashion_trend_product = results
+
+    trendy_products["seasonal_top_products"][0]["fitted_img"] = fitted_seasonal_top_product
+    trendy_products["fashion_trend_products"][0]["fitted_img"] = fitted_fashion_trend_product
+    
+    return trendy_products
 
 
 @app.post("/take_user_image")

@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Load and preprocess the data
-df = pd.read_csv(r'C:\Users\Prakash\OneDrive\Desktop\myntra\Myntra-CoDivas\back\products_final_data.csv')
+df = pd.read_csv(r'products_final_data.csv')
 df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
 
 # Ensure all required columns are present
@@ -30,7 +30,7 @@ def get_top_products(main_category, target_audience):
         lambda x: x.nlargest(10, 'quantity')
     ).reset_index(drop=True)
 
-    seasonal_top_5 = seasonal_top_products[
+    seasonal_top_10 = seasonal_top_products[
         (seasonal_top_products['main_category'] == main_category) & 
         (seasonal_top_products['target_audience'] == target_audience)
     ][['name', 'product_id', 'price', 'main_category', 'subcategory', 'img']].to_dict(orient='records')
@@ -67,14 +67,14 @@ def get_top_products(main_category, target_audience):
     # Merge to include product details
     fashion_top_products_details = fashion_top_products.merge(df[['name', 'product_id', 'price', 'rating', 'main_category', 'subcategory', 'img']], on=['name', 'main_category'], how='left')
     
-    fashion_top_5 = fashion_top_products_details[
+    fashion_top_10 = fashion_top_products_details[
         (fashion_top_products_details['main_category'] == main_category) & 
         (fashion_top_products_details['target_audience'] == target_audience)
     ][['name', 'product_id', 'price', 'main_category', 'subcategory', 'img']].head(10).to_dict(orient='records')
 
     result = {
-        "seasonal_top_products": seasonal_top_5,
-        "fashion_trend_products": fashion_top_5
+        "seasonal_top_products": seasonal_top_10,
+        "fashion_trend_products": fashion_top_10
     }
 
     return result
