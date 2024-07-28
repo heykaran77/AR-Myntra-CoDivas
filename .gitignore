@@ -5,3 +5,4 @@ chromadb_database
 sqlite_database
 __pycache__
 uploaded_user_images
+test.py

@@ -4,14 +4,15 @@ import sqlite3
 import os
 from rag import get_images_using_llm, viton_api
 from recommendation import get_top_products
-from flask_cors import CORS
 from fastapi.middleware.cors import CORSMiddleware
+import asyncio
+
+
 app = FastAPI()
 
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    "https://your-production-app-url.com",
 ]
 
 app.add_middleware(
@@ -34,7 +35,7 @@ def get_images(data: dict):
     category_1= categories[0]
     print(category_1)
     
-    final_image = viton_api(image_1, category_1)
+    final_image = viton_api(image_1, category_1) # along with these parameters, we can also pass the user image
     
     try:
         image_2 = images[1]
@@ -48,7 +49,7 @@ def get_images(data: dict):
 
 
 @app.post("/get_recommendations")
-def get_recommendations(data: dict):
+async def get_recommendations(data: dict):
     name = data["name"]
     product_id = data["product_id"]
     main_category = data["main_category"]
@@ -66,25 +67,51 @@ def get_recommendations(data: dict):
         
     trendy_products = get_top_products(recommended_category, target_audience)
     
-    pass
+    seasonal_top_product = trendy_products["seasonal_top_products"][0]
+    fashion_trend_product = trendy_products["fashion_trend_products"][0]
+    
+    tasks = []
+
+    if seasonal_top_product["main_category"] == "Top Wear":
+        tasks.append(asyncio.to_thread(viton_api, seasonal_top_product["img"], "Upper-body"))
+    elif seasonal_top_product["main_category"] == "Bottom Wear":
+        tasks.append(asyncio.to_thread(viton_api, seasonal_top_product["img"], "Lower-body"))
+    elif seasonal_top_product["main_category"] == "Dress (Full Length)":
+        tasks.append(asyncio.to_thread(viton_api, seasonal_top_product["img"], "Dress"))
+        
+    if fashion_trend_product["main_category"] == "Top Wear":
+        tasks.append(asyncio.to_thread(viton_api, fashion_trend_product["img"], "Upper-body"))
+    elif fashion_trend_product["main_category"] == "Bottom Wear":
+        tasks.append(asyncio.to_thread(viton_api, fashion_trend_product["img"], "Lower-body"))
+    elif fashion_trend_product["main_category"] == "Dress (Full Length)":
+        tasks.append(asyncio.to_thread(viton_api, fashion_trend_product["img"], "Dress"))
+    
+    results = await asyncio.gather(*tasks)
+    
+    fitted_seasonal_top_product, fitted_fashion_trend_product = results
+
+    trendy_products["seasonal_top_products"][0]["fitted_img"] = fitted_seasonal_top_product
+    trendy_products["fashion_trend_products"][0]["fitted_img"] = fitted_fashion_trend_product
+    
+    return trendy_products
 
 
 @app.post("/take_user_image")
-async def get_user_image(image: UploadFile = File(...)):
+async def get_user_image(file: UploadFile = File(...)):
     """Endpoint to upload an image and save it to the local folder"""
     try:
         # Ensure the uploaded file is an image
-        if image.content_type not in ["image/jpeg", "image/png", "image/gif"]:
+        if file.content_type not in ["image/jpeg", "image/png", "image/gif"]:
             raise HTTPException(status_code=400, detail="Unsupported file type.")
 
         # Define the path where the image will be saved
-        image_path = os.path.join(UPLOAD_DIR, image.filename)
+        image_path = os.path.join(UPLOAD_DIR, file.filename)
 
         # Write the uploaded file to the specified path
         with open(image_path, "wb") as buffer:
-            buffer.write(await image.read())
+            buffer.write(await file.read())
 
-        return {"filename": image.filename, "path": image_path}
+        return {"filename": file.filename, "path": image_path}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error uploading image: {str(e)}")
@@ -107,8 +134,6 @@ def get_myntra_data():
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching data: {str(e)}")
-
-
 
 
 if __name__ == "__main__":
