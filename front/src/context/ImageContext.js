@@ -12,10 +12,12 @@ export const ImageProvider = ({ children }) => {
     '/5th.jpeg',
     
   ]);
+  
   const [image,uploadImage] = useState(null);
   const [file,setFile] = useState(null);
   const [data,setData] = useState([
     {
+      id:1,
       brand: "Brand A",
       title: "Product A",
       price: 1000,
@@ -26,6 +28,7 @@ export const ImageProvider = ({ children }) => {
       mouse: false
     },
     {
+      id: 2,
       brand: "Brand B",
       title: "Product B",
       price: 1500,

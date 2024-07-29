@@ -55,6 +55,11 @@ function Card() {
   //     fetchData();
   // }, [])
 
+  const handleMove = (ele) => {
+    navigate(`/single/${ele.id}`)
+    console.log(ele)
+    setSelectedImage(ele)
+  }
 
   var handleEnter = (e) => {
     setflag(true);
@@ -64,10 +69,7 @@ function Card() {
     setflag(false);
     e.mouse = false;
   };
-  const handleMove = (ele) => {
-    navigate(`/singlemen/${ele.id}`)
-    console.log(ele)
-  }
+
   const handleEnterBundle=()=>{
     setFlagBundle(true)
   }
@@ -87,46 +89,7 @@ function Card() {
     setFlagSize(false)
 
   }
-  // useEffect(() => {
-  //   const getData = async () => {
-  //     let res = await fetch("https://myntrafinaldata.herokuapp.com/men");
-  //     let data = await res.json();
-  //     setData(data);
-  //     // console.log(data);
-  //   };
-  //   getData();
-  // }, []);
-  // console.log(datas);
-  let filterData = [];
-  // useEffect(() => {
-  //   if (event && isChecked) {
-  //     filterData = datas.filter((ele) => ele.brand == event);
-  //     if (newdata.length > 0) {
-  //       setNewdata([...filterData, ...newdata]);
-  //     } else {
-  //       setNewdata([...filterData]);
-  //     }
-  //   } else if (event && isChecked == false) {
-  //     filterData = newdata.filter((ele) => ele.brand != event);
-  //     console.log(filterData);
-  //     if (newdata) {
-  //       setNewdata([...filterData]);
-  //     } else {
-  //       setData(datas);
-  //     }
-  //   } else {
-  //     setData(datas);
-  //   }
-
-    // console.log(filterData)
-    // console.log(event);
-
-    // console.log("called");
-  // }, [event, isChecked]);
-  // console.log(newdata);
-
-  // handleData(newdata);
-
+  
 
 
  

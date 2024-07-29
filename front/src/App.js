@@ -7,6 +7,7 @@ import Main from "./pages/Main";
 import Visualise from "./pages/Visualise";
 import { ImageProvider } from "./context/ImageContext";
 import Main2 from "./pages/Main2";
+import Details from "./components/Details/Details";
 
 const fileTypes = ["JPG", "PNG"];
 
@@ -19,6 +20,8 @@ function App() {
       <Route path="/visualise" element={<Visualise/>}/>
       <Route path="/catalog" element={<Main/>}/>
       <Route path="/" element={<Main2/>}/>
+      <Route extact path="/single/:id" element={<Details/>} />
+
       {/* <Route path="/" element={<Upload/>}/> */}
       
     </Routes>
