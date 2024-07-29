@@ -10,7 +10,7 @@ collection = chromadb_client.get_or_create_collection(name="myntra_data", embedd
 def add_data_to_db():
     
     def get_data_from_csv():
-        df = pd.read_csv("products_final_data.csv")
+        df = pd.read_csv("back/backend/products_final_data.csv")
         
         new_df = df[["name", "main_category", "subcategory", "img"]]
         
