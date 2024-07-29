@@ -12,7 +12,9 @@ os.environ["GOOGLE_API_KEY"] = os.environ["GEMINI_API_KEY"]
 
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
 
-chromadb_client = chromadb.PersistentClient(path="./backend/chromadb_database")
+CHROMADB_PATH = "./back/backend/chromadb_database"
+
+chromadb_client = chromadb.PersistentClient(path=CHROMADB_PATH)
 embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="thenlper/gte-base")
 
 collection = chromadb_client.get_or_create_collection(name="myntra_data", embedding_function=embedding_function) # If not specified, by default uses the embedding function "all-MiniLM-L6-v2"

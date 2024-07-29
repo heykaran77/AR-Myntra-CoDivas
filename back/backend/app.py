@@ -25,7 +25,8 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
-UPLOAD_DIR = "./backend/uploaded_user_images"
+UPLOAD_DIR = "./back/backend/uploaded_user_images"
+SQLITE_DB_PATH = "./back/backend/sqlite_database/myntra.db"
 Path(UPLOAD_DIR).mkdir(parents=True, exist_ok=True)
 
 @app.post("/get_images")
@@ -139,7 +140,7 @@ async def get_user_image(file: UploadFile = File(...)):
 def get_myntra_data():
     
     try:
-        conn = sqlite3.connect("./backend/sqlite_database/myntra.db")
+        conn = sqlite3.connect(SQLITE_DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM products")

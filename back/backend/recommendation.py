@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Load and preprocess the data
-df = pd.read_csv(r'products_final_data.csv')
+df = pd.read_csv(r'back\backend\products_final_data.csv')
 df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
 
 # Ensure all required columns are present
