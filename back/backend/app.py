@@ -27,8 +27,9 @@ UPLOAD_DIR = "./backend/uploaded_user_images"
 Path(UPLOAD_DIR).mkdir(parents=True, exist_ok=True)
 
 @app.post("/get_images")
-def get_images(data: dict):
-    query = data["query"]
+def get_images(search: dict):
+    query = search["query"]
+    print(query)
     images, categories = get_images_using_llm(query)
     image_1 = images[0]
     print(image_1)
