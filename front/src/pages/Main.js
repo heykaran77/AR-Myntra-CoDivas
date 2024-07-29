@@ -22,24 +22,24 @@ const Main = () => {
         setSelectedImage(item.imageSrc);
         console.log('Submitting data:', item);
         navigate('/visualise')
-        // axios.post('http://localhost:8000/get_myntra_data', item, {
-        //   headers: {
-        //     'Content-Type': 'application/json'
-        //   }
-        // })
-        // .then(response => {
-        //   console.log('Response received:', response.data);
-        //   setResponseImages(response.data.images);
-        //   navigate('/visualise');
-        // })
-        // .catch(error => {
-        //     Swal.fire({
-        //         icon: 'error',
-        //         title: 'Oops...',
-        //         text: 'Something went wrong!',
-        //     })
-        //   console.error('Error uploading data:', error);
-        // });
+        axios.post('http://localhost:8000/get_myntra_data', item, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => {
+          console.log('Response received:', response.data);
+          setResponseImages(response.data.images);
+          navigate('/visualise');
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong!',
+            })
+          console.error('Error uploading data:', error);
+        });
       };
     const fetchData = async () => {
         try {
