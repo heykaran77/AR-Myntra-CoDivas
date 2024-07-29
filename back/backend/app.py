@@ -98,7 +98,22 @@ async def get_recommendations(data: dict):
     
     return trendy_products
 
-
+@app.post("/visualize_image")
+async def visualize_image(data: dict):
+    category = data["main_category"]
+    image = data["img"]
+    if category == "Top Wear":
+        category = "Upper-body"
+        return viton_api(image, category)
+        
+    if category == "Bottom Wear":
+        category = "Lower-body"
+        return viton_api(image, category)
+    
+    if category == "Dress (Full Length)":
+        category = "Dress"
+        return viton_api(image, category)
+    
 @app.post("/take_user_image")
 async def get_user_image(file: UploadFile = File(...)):
     """Endpoint to upload an image and save it to the local folder"""
