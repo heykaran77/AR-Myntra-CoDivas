@@ -40,6 +40,7 @@ export let DescDiv = styled.div`
   width: 210px;
   height: ${props=>props.flag?"77.8px":"57.8px"};
   ${'' /* background: red; */};
+  margin-top: 1em;
   cursor:pointer
 
 `;

@@ -14,7 +14,29 @@ export const ImageProvider = ({ children }) => {
   ]);
   const [image,uploadImage] = useState(null);
   const [file,setFile] = useState(null);
-  const [data,setData] = useState([]);
+  const [data,setData] = useState([
+    {
+      brand: "Brand A",
+      title: "Product A",
+      price: 1000,
+      off_price: 1200,
+      discount: 20,
+      images: { image1: "https://via.placeholder.com/150" },
+      sizes: ["S", "M", "L"],
+      mouse: false
+    },
+    {
+      brand: "Brand B",
+      title: "Product B",
+      price: 1500,
+      off_price: 1800,
+      discount: 15,
+      images: { image1: "https://via.placeholder.com/150" },
+      sizes: ["M", "L"],
+      mouse: false
+    },
+    // Add more sample data as needed
+  ]);
 
 
   return (

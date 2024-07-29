@@ -33,27 +33,27 @@ function Card() {
   const [loading,setLoading] = useState(true)
   
 
-    const fetchData = async () => {
-      try {
-          setLoading(false)
-          const response = await axios.get(`http://localhost:8000/get_myntra_data`)
-          if (response.status == 200) {
-              console.log(response.data)
-              setData(response.data)
-              setLoading(true)
-          }
+  //   const fetchData = async () => {
+  //     try {
+  //         setLoading(false)
+  //         const response = await axios.get(`http://localhost:8000/get_myntra_data`)
+  //         if (response.status == 200) {
+  //             console.log(response.data)
+  //             setData(response.data)
+  //             setLoading(true)
+  //         }
         
-      } catch (err) {
-          Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: 'Something went wrong!',
-          })
-      }
-  }
-  useEffect(() => {
-      fetchData();
-  }, [])
+  //     } catch (err) {
+  //         Swal.fire({
+  //             icon: 'error',
+  //             title: 'Oops...',
+  //             text: 'Something went wrong!',
+  //         })
+  //     }
+  // }
+  // useEffect(() => {
+  //     fetchData();
+  // }, [])
 
 
   var handleEnter = (e) => {
@@ -87,15 +87,15 @@ function Card() {
     setFlagSize(false)
 
   }
-  useEffect(() => {
-    const getData = async () => {
-      let res = await fetch("https://myntrafinaldata.herokuapp.com/men");
-      let data = await res.json();
-      setData(data);
-      // console.log(data);
-    };
-    getData();
-  }, []);
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     let res = await fetch("https://myntrafinaldata.herokuapp.com/men");
+  //     let data = await res.json();
+  //     setData(data);
+  //     // console.log(data);
+  //   };
+  //   getData();
+  // }, []);
   // console.log(datas);
   let filterData = [];
   // useEffect(() => {
@@ -180,7 +180,6 @@ function Card() {
                     ></img>
                   </CardDiv>
 
-                  {!ele.mouse ? (
                     <DescDiv flag={ele.mouse}>
                       <div
                         style={{
@@ -229,75 +228,16 @@ function Card() {
                             textDecorationLine: "line-through",
                           }}
                         >
-                          {ele.off_price ? `Rs ${ele.off_price}` : "NA"}
+                          {/* {ele.off_price ? `Rs ${ele.off_price}` : "NA"} */}
+                          500
                         </p>
                         <p style={{ fontSize: "12px", color: "orange" }}>
-                          {ele.discount ? `(${ele.discount}% OFF)` : "NA"}
+                          {/* {ele.discount ? `(${ele.discount}% OFF)` : "NA"} */}
+                          200
                         </p>
                       </div>
                     </DescDiv>
-                  ) : (
-                    <DescDiv flag={ele.mouse}>
-                      <div
-                        style={{
-                          height: "30px",
-                          width: "60%",
-                          border: "1px solid black",
-                          margin: "5px auto 10px auto",
-                          paddingLeft: "5px",
-                          boxSizing: "border-box",
-                          textAlign: "center",
-                          display: "flex",
-                          gap: "10px",
-                          justifyContent: "center",
-                          background: "#e7396a",
-                          color: "white",
-                        }}
-                      >
-                        <ShoppingBagIcon />{" "}
-                        <p style={{ marginTop: "5px", fontWeight: "600" }}>
-                          ADD TO BAG
-                        </p>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "left",
-                          margin: "-15px 8px",
-                          gap: "15px",
-                        }}
-                      >
-                        <p style={{ marginRight: "-10px" }}> Sizes:</p>{" "}
-                        {ele.sizes.map((ele) => {
-                          return <p> {ele}</p>;
-                        })}
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "left",
-                          margin: "-25px 8px",
-                          position: "sticky",
-                          gap: "20px",
-                        }}
-                      >
-                        <p
-                          style={{ fontSize: "12px", fontWeight: "bold" }}
-                        >{`Rs ${ele.price}`}</p>
-                        <p
-                          style={{
-                            fontSize: "12px",
-                            textDecorationLine: "Solid line-through",
-                          }}
-                        >
-                          {ele.off_price ? `Rs ${ele.off_price}` : "NA"}
-                        </p>
-                        <p style={{ fontSize: "12px", color: "orange" }}>
-                          {ele.discount ? `(${ele.discount}% OFF)` : "NA"}
-                        </p>
-                      </div>
-                    </DescDiv>
-                  )}
+                  
                 </MainDiv>
               );
             })
