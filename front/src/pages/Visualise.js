@@ -40,20 +40,19 @@ const Visualise = () => {
   const currentImage = responseImages[currentIndex];
   console.log(currentImage)
 
-  const handleSearch = () =>
+  const handleSearch = (event) =>
   {
-    // axios.post('http://localhost:8000/search', { search:search })
-    //     .then(response => {
-    //       console.log('Feedback submitted:', response.data);
-    //       setResponseImages(response.data.images); 
-    //       setFeedbackArray([]);
-    //       setCurrentIndex(0);
-    //     })
-    //     .catch(error => {
-    //       console.error('Error submitting feedback:', error);
-    //     });   
-    setResponseImages([x])
-    setCurrentIndex(0)
+    event.preventDefault();
+    axios.post('http://localhost:8000/get_images', { search:search })
+        .then(response => {
+          console.log('Feedback submitted:', response.data);
+          setResponseImages(response.data.images); 
+          setFeedbackArray([]);
+          setCurrentIndex(0);
+        })
+        .catch(error => {
+          console.error('Error submitting feedback:', error);
+        });   
 
   }
 
