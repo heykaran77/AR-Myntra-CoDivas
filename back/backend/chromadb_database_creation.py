@@ -2,7 +2,7 @@ import pandas as pd
 import chromadb
 import chromadb.utils.embedding_functions as embedding_functions
 
-chromadb_client = chromadb.PersistentClient(path="./backend/chromadb_database")
+chromadb_client = chromadb.PersistentClient(path="./back/backend/chromadb_database")
 embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="thenlper/gte-base")
 
 collection = chromadb_client.get_or_create_collection(name="myntra_data", embedding_function=embedding_function) # If not specified, by default uses the embedding function "all-MiniLM-L6-v2"
