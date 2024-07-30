@@ -60,20 +60,20 @@ async def get_fitted_images(images):
         if image["main_category"] == "Top Wear":
             print(image['extract_images'])
             image_path = os.path.join("back", "backend", "output", image['extract_images'])
-            tasks.append(viton_model(image_path, "Upper-body"))
+            tasks.append(viton_model(cloth_image_path=image_path, cloth_category="Upper-body"))
         elif image["main_category"] == "Bottom Wear":
             print(image['extract_images'])
             image_path = os.path.join("back", "backend", "output", image['extract_images'])
-            tasks.append(viton_model(image_path, "Lower-body"))
+            tasks.append(viton_model(cloth_image_path=image_path, cloth_category="Lower-body"))
         elif image["main_category"] == "Dress (Full Length)":
             print(image['extract_images'])
             image_path = os.path.join("back", "backend", "output", image['extract_images'])
-            tasks.append(viton_model(image_path, "Dress"))
+            tasks.append(viton_model(cloth_image_path=image_path, cloth_category="Dress"))
                 
     results = await asyncio.gather(*tasks)
     
-    encoded_images = [base64.b64encode(image).decode('utf-8') for image in results]
-    return {"images": encoded_images}
+    # encoded_images = [base64.b64encode(image).decode('utf-8') for image in results]
+    return {"images": results}
 
 @app.post("/get_recommendations")
 async def get_recommendations(data: dict):

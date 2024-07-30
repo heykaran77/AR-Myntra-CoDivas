@@ -100,7 +100,7 @@ def local_image_to_base64(image_path: str) -> str:
     return base64_encoded
 
 
-async def segmind_diffusion(cloth_image_url: str, model_image_url: str = 'https://levihsu-ootdiffusion.hf.space/file=/tmp/gradio/aa9673ab8fa122b9c5cdccf326e5f6fc244bc89b/model_8.png', cloth_image_path: str = None, model_image_path: str = None, clothing_category: str = None):
+async def segmind_diffusion(cloth_image_url: str=None, model_image_url: str = 'https://media.istockphoto.com/id/184293365/photo/female-portrait.jpg?s=612x612&w=0&k=20&c=lSddLX6bkOOttfnOJN7i_MvbzDJnIxL4JWWvKkzo79o=', cloth_image_path: str = None, model_image_path: str = None, clothing_category: str = None):
     api_key = os.getenv("SEGMIND_API_KEY")
     url = "https://api.segmind.com/v1/try-on-diffusion"
 
@@ -129,21 +129,33 @@ async def segmind_diffusion(cloth_image_url: str, model_image_url: str = 'https:
         async with session.post(url, json=data, headers=headers) as response:
             if response.status == 200:
                 image_data = await response.read()
-                print(image_data)
+                # print(image_data)
                 print("###################")
-                img_path = f"./back/Virtual Try-On/{cloth_image_url.split('/')[-1]}.png"
+                if cloth_image_path:
+                    img_path = os.path.join("./back/Virtual Try-On", os.path.basename(cloth_image_path))
+                elif cloth_image_url:
+                    img_path = f"./back/Virtual Try-On/{cloth_image_url.split('/')[-1]}.png"
                 with open(img_path, "wb") as image_file:
                     image_file.write(image_data)
-                return image_data
+                return img_path
             else:
                 error_message = await response.text()
                 return {"error": response.status, "message": error_message}
 
 
-async def viton_model(cloth_image: str, cloth_category: str, person_image: str = 'https://levihsu-ootdiffusion.hf.space/file=/tmp/gradio/aa9673ab8fa122b9c5cdccf326e5f6fc244bc89b/model_8.png', cloth_image_path: str = None, person_image_path: str = None, model: str = "1"):
+async def viton_model(cloth_image: str = None, cloth_category: str = None, person_image: str = 'https://img.freepik.com/free-photo/pretty-young-woman-standing-isolated_171337-1540.jpg', cloth_image_path: str = None, person_image_path: str = None, model: str = "2"):
     
     if model == "1":
-        result = ootdiffusion_model(cloth_image, cloth_category, person_image)
+        if cloth_image:
+            if person_image:
+                result = ootdiffusion_model(cloth_image, cloth_category, person_image)
+            else:
+                result = ootdiffusion_model(cloth_image, cloth_category, person_image_path)
+        else:
+            if person_image:
+                result = ootdiffusion_model(cloth_image_path, cloth_category, person_image)
+            else:
+                result = ootdiffusion_model(cloth_image_path, cloth_category, person_image_path)
     elif model == "2":
         if cloth_category == "Upper-body":
             cloth_category = "Upper body"
