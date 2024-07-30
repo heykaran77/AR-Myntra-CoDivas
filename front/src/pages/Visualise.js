@@ -1,35 +1,79 @@
-import { AppBar, Grid, TextField } from '@mui/material'
+import { AppBar, Grid, TextField, Typography } from '@mui/material'
 import React from 'react'
 import { Box } from '@mui/system';
-import { Button } from 'flowbite-react';
+import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
+
+// import { Button } from 'flowbite-react';
+import { Button, Card } from 'flowbite-react';
+import { MainDiv, CardDiv, DescDiv ,CountryDiv , BundlesDiv ,SizeDiv ,ContainerDiv , TopDiv} from "../components/cards/cardItems";
+import {
+  DetailsMainDiv,
+  ImageContainer,
+  Img,
+  ImgDiv,
+  SubDetailsDiv,
+  WishDiv,
+  SizesDIv,
+  BagDiv,
+  RatingDiv,
+  TryONDiv
+} from "../components/Details/detailStyled2";
 
 import { useState } from 'react';
 import { ImageContext } from '../context/ImageContext';
 import { useEffect, useContext } from 'react';
 import axios from 'axios'
 import x from './rag.jpeg'
+import SearchIcon from "@mui/icons-material/Search";
+
+const linkStyle = {
+  textDecoration: "none",
+  padding: "5px",
+  color: "black",
+};
 
 const Visualise = () => {
-  const { responseImages,setResponseImages } = useContext(ImageContext);
+  const { responseImages,setResponseImages,intial,setInitial,original,setOriginal,recommended,setRecommended,showNext,setShowNext,current,setCurrent,details,setDetails } = useContext(ImageContext);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [feedbackArray, setFeedbackArray] = useState([]);
+  const [feedback, setFeedback] = useState({
+    positive_feedback: [],
+    negative_feedback: []
+  });
   const [search,setSearch] = useState(null);
-  
+  const [responseSearch,setResponseSearch] = useState([])
 
-  const handleClick = (feedback) => {
-    if (currentIndex < responseImages.length) {
-      const currentImage = responseImages[currentIndex];
-      const newFeedback = `${currentImage} ${feedback}`;
-      setFeedbackArray([...feedbackArray, newFeedback]);
-      setCurrentIndex(currentIndex + 1);
+  const handleClick = (feedback,category) => {
+    if (currentIndex < recommended.length) {
+      setFeedback((prevFeedback) => {
+        const updatedFeedback = { ...prevFeedback };
+        if (feedback === 'positive') {
+          updatedFeedback.positive_feedback.push(category);
+        } else {
+          updatedFeedback.negative_feedback.push(category);
+        }
+        return updatedFeedback;
+      });
+
+      if (showNext) {
+        setCurrentIndex(currentIndex + 1);
+      }
+      else {
+        setShowNext(true)
+      }
+
+      
     }
     else{
-        axios.post('http://localhost:8000/submit-feedback', { feedback: feedbackArray })
+        axios.post('http://localhost:8000/submit-feedback', feedback)
         .then(response => {
           console.log('Feedback submitted:', response.data);
-          setResponseImages(response.data.images); 
-          setFeedbackArray([]);
-          setCurrentIndex(0);
+          const { fitted_img, original_details, recommended_details } = response.data;
+          setInitial(fitted_img);
+          setOriginal(original_details);
+          setRecommended(recommended_details);
+          setCurrent(fitted_img)
+          setDetails(original_details)
+          setShowNext(false)
         })
         .catch(error => {
           console.error('Error submitting feedback:', error);
@@ -37,22 +81,31 @@ const Visualise = () => {
     }
   };
 
-  const currentImage = responseImages[currentIndex];
-  console.log(currentImage)
+  
+  useEffect(() => {
+    if (!current) {
+      setCurrent(intial);
+    } else if (showNext && currentIndex < recommended.length) {
+      const currentImage = recommended[currentIndex].fitted_img;
+      setCurrent(currentImage);
+    }
+  }, [currentIndex, recommended, showNext]);
 
   const handleSearch = (event) =>
   {
     event.preventDefault();
-    axios.post('http://localhost:8000/get_images', { search:search })
-        .then(response => {
-          console.log('Feedback submitted:', response.data);
-          setResponseImages(response.data.images); 
-          setFeedbackArray([]);
-          setCurrentIndex(0);
-        })
-        .catch(error => {
-          console.error('Error submitting feedback:', error);
-        });   
+    // axios.post('http://localhost:8000/get_images', { search:search })
+    //     .then(response => {
+    //       console.log('Feedback submitted:', response.data);
+    //       setResponseImages(response.data.images); 
+    //       // setFeedbackArray([]);
+    //       setCurrentIndex(0);
+    //     })
+    //     .catch(error => {
+    //       console.error('Error submitting feedback:', error);
+    //     });   
+    setCurrent(x)
+    
 
   }
 
@@ -62,9 +115,10 @@ const Visualise = () => {
   }
 
   return (
+    
     <Grid container className='h-screen'>
       <Grid item xs={12}>
-        <AppBar className='bg-blue-100 h-14' sx={{ backgroundColor: 'rgb(219 234 254 / var(--tw-bg-opacity))' }}>
+        <AppBar className='bg-blue-100 h-14' sx={{ backgroundColor: '#e7396a' }}>
           <form className="flex items-center max-w-sm mx-auto mt-1 mb-1">
             <div className="relative w-full">
               <input
@@ -79,12 +133,13 @@ const Visualise = () => {
             <button
               type="submit"
               onClick = {handleSearch}
-              className="p-2.5 ms-6 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              className="p-2.5 ms-6 text-sm font-medium text-white rounded-lg border-none focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
-              <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+              {/* <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
               </svg>
-              <span className="sr-only">Search</span>
+              <span className="sr-only">Search</span> */}
+              <SearchIcon/>
             </button>
           </form>
         </AppBar>
@@ -92,8 +147,10 @@ const Visualise = () => {
 
       <Grid item xs={12}>
         <Grid container className='p-10 mt-14'>
-          <Grid item lg={4.5} md={4.5} sm={4} xs={4} className='flex justify-center items-center'>
-            <button onClick={() => handleClick('Negative')}>
+          <Grid item xs={8}>
+            <Grid container>
+            <Grid item lg={3.5} md={3.5} sm={4} xs={4} className='flex justify-center items-center'>
+            <button onClick={() => handleClick('Negative',details.subcategory)}>
               <svg className="h-16 w-16 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="15" y1="9" x2="9" y2="15" />
@@ -102,16 +159,16 @@ const Visualise = () => {
             </button>
           </Grid>
 
-          <Grid item lg={3} md={3} sm={8} xs={8} className='bg-blue-100 flex justify-center items-center' sx={{ height: '80vh', borderRadius: '1em' }}>
-  {currentImage ? (
-    <img src={currentImage} alt="Current" className="w-full h-full object-cover" style={{ borderRadius: '1em' }} />
-  ) : (
-    <p>Loading...</p>
-  )}
-</Grid>
+                  <Grid item lg={5} md={5} sm={8} xs={8} className='bg-blue-100 flex justify-center items-center' sx={{ height: '80vh', borderRadius: '1em' }}>
+          {current ? (
+            <img src={current} alt="Current" className="w-full h-full object-cover" style={{ borderRadius: '1em' }} />
+          ) : (
+            <p>Loading...</p>
+          )}
+        </Grid>
 
-          <Grid item lg={4.5} md={4.5} sm={4} xs={4} className='flex justify-center items-center'>
-            <button onClick={() => handleClick('Positive')}>
+          <Grid item lg={3.5} md={3.5} sm={4} xs={4} className='flex justify-center items-center'>
+            <button onClick={() => handleClick('Positive',details.subcategory)}>
               <svg className="h-16 w-16 text-green-500" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" />
                 <circle cx="12" cy="12" r="9" />
@@ -119,6 +176,197 @@ const Visualise = () => {
               </svg>
             </button>
           </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={4}>
+            <div style={{display:'flex' , alignItems:'center',flexDirection:'column'}}>
+              <Typography style={linkStyle}>ITEMS IN THE IMAGE</Typography>
+            <div style={{display:'flex' , justifyContent:'center',flexDirection:'row',marginTop:'1em'}}>
+
+              <MainDiv
+                  // onMouseEnter={() => {
+                  //   handleEnter(ele);
+                  // }}
+                  // onMouseLeave={() => {
+                  //   handleLeave(ele);
+                  // }}
+                  // onClick={()=>{handleMove(ele)}}
+                >
+                  <CardDiv >
+                    <img
+                      src={`${original.img}`}
+                      style={{ width: "100%", height: "100%" }}
+                    ></img>
+                  </CardDiv>
+
+                    <DescDiv >
+                      <div
+                        style={{
+                          overflow: "hidden",
+                          height: "35px",
+                          margin: "-10px 8px",
+                          textAlign: "left",
+                        }}
+                      >
+                        <p style={{ fontWeight: "bold", fontSize: "12px" }}>
+                          {original.brand}
+                        </p>
+                      </div>
+                      <div
+                        style={{
+                          overflow: "hidden",
+                          height: "32px",
+                          margin: "-15px 8px",
+                          textAlign: "left",
+                        }}
+                      >
+                        <p
+                          style={{
+                            textTransform: "capitalize",
+                            fontSize: "12px",
+                          }}
+                        >
+                          {original.brand}
+                          
+                        </p>
+                      </div>
+
+
+
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "left",
+                          margin: "auto 8px",
+                          gap: "20px",
+                          marginBottom:'1em'
+                        }}
+                      >
+                        <p
+                          style={{ fontSize: "12px", fontWeight: "bold" }}
+                        >
+                          {original.price}
+                        </p>
+                        
+                        <p style={{ fontSize: "12px", color: "orange" }}>
+                        {original.discount}
+                          
+                        </p>
+                      </div>
+                      <BagDiv
+                      
+                    >
+                      <ShoppingBagIcon />
+                      <a>
+                      <p>
+                        <b>ADD TO CART</b>
+                      </p>
+                      </a>
+                      
+                    </BagDiv>
+
+                    </DescDiv>
+                  
+                </MainDiv>
+
+                {
+                  showNext && currentIndex < recommended.length &&
+                  <MainDiv
+                  // onMouseEnter={() => {
+                  //   handleEnter(ele);
+                  // }}
+                  // onMouseLeave={() => {
+                  //   handleLeave(ele);
+                  // }}
+                  // onClick={()=>{handleMove(ele)}}
+                  style={{marginLeft:'3em'}}
+                >
+                  <CardDiv >
+                    <img
+                      src={`${recommended[currentIndex].img}`}
+                      style={{ width: "100%", height: "100%" }}
+                    ></img>
+                  </CardDiv>
+
+                    <DescDiv >
+                      <div
+                        style={{
+                          overflow: "hidden",
+                          height: "35px",
+                          margin: "-10px 8px",
+                          textAlign: "left",
+                        }}
+                      >
+                        <p style={{ fontWeight: "bold", fontSize: "12px" }}>
+                        {recommended[currentIndex].brand}
+                          
+                        </p>
+                      </div>
+                      <div
+                        style={{
+                          overflow: "hidden",
+                          height: "32px",
+                          margin: "-15px 8px",
+                          textAlign: "left",
+                        }}
+                      >
+                        <p
+                          style={{
+                            textTransform: "capitalize",
+                            fontSize: "12px",
+                          }}
+                        >
+                          {recommended[currentIndex].name}
+                          
+                        </p>
+                      </div>
+
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "left",
+                          margin: "auto 8px",
+                          gap: "20px",
+                          marginBottom:'1em'
+                        }}
+                      >
+                        <p
+                          style={{ fontSize: "12px", fontWeight: "bold" }}
+                        >
+                          {recommended[currentIndex].price}
+                        </p>
+                        
+                        <p style={{ fontSize: "12px", color: "orange" }}>
+                        {recommended[currentIndex].discount}
+                          
+                        </p>
+                      </div>
+                      <BagDiv
+                      
+                    >
+                      <ShoppingBagIcon />
+                      <a>
+                      <p>
+                        <b>ADD TO CART</b>
+                      </p>
+                      </a>
+                      
+                    </BagDiv>
+                    </DescDiv>
+                  
+                </MainDiv>
+
+                }
+
+                
+                </div>
+            </div>
+            
+            
+
+          
+          </Grid>
+
         </Grid>
       </Grid>
     </Grid>

@@ -15,21 +15,61 @@ import {
     SizesDIv,
     BagDiv,
     RatingDiv,
+    TryONDiv
   } from "./detailStyled2";
   import StarIcon from "@mui/icons-material/Star";
 
   import { ImageContext } from '../../context/ImageContext';
+  import Swal from 'sweetalert2';
+import axios from 'axios';
+import {useNavigate} from 'react-router-dom'
+
 
 const Details = () => {
+    
+  const {data,setData,selectedImage,setSelectedImage,responseImages,setResponseImages,intial,setInitial,original,setOriginal,recommended,setRecommended,showNext,setShowNext,current,setCurrent,details,setDetails} = useContext(ImageContext)
+  const navigate = useNavigate()
+    const sizes = ['XS','S','M','L','XL']
 
-    const {selectedImage} = useContext(ImageContext)
+    
+
+    const handleSubmit = (item) => {
+      // setSelectedImage(item.img);
+      console.log('Submitting data:', item);
+      navigate('/visualise')
+      axios.post('http://localhost:8000/get_recommendations', item, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        console.log('Response received:', response.data);
+        const { fitted_img, original_details, recommended_details } = response.data;
+        setInitial(fitted_img);
+        setOriginal(original_details);
+        setRecommended(recommended_details);
+        setCurrent(fitted_img)
+        setDetails(original_details)
+        // setResponseImages(response.data.images);
+        navigate('/visualise');
+      })
+      .catch(error => {
+          Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Something went wrong!',
+          })
+        console.error('Error uploading data:', error);
+      });
+    };
+
   return (
     <>
             <Navbar />
-            <DetailsMainDiv key={selectedImage.id}>
+            <DetailsMainDiv key={selectedImage.img}>
               <ImageContainer style={{display:'flex',justifyContent:'center'}}>
                 <ImgDiv>
-                  <Img src={selectedImage.images.image1} />
+                  <Img src={selectedImage.img} />
                 </ImgDiv>
                 {/* <ImgDiv>
                   <Img src={selectedImage.images.image2} />
@@ -58,7 +98,7 @@ const Details = () => {
                         </p>
                       </b>
                       <p style={{ fontSize: "20px", color: "#8b8d97" }}>
-                        {selectedImage.title}
+                        {selectedImage.name}
                       </p>
                     </div>
                     <RatingDiv>
@@ -86,7 +126,7 @@ const Details = () => {
                         }}
                       >
                         {" "}
-                        <p> | {selectedImage.count} Ratings</p>
+                        <p> | {selectedImage.ratingTotal} Ratings</p>
                       </div>
                     </RatingDiv>
                   </div>
@@ -105,19 +145,7 @@ const Details = () => {
                           style={{ color: "darkslategray", fontSize: "22px" }}
                         >{`Rs.${selectedImage.price}`}</b>
                       </p>
-                      <p
-                        style={{
-                          color: "#8b8d97",
-                          fontSize: "18px",
-                          marginTop: "12px",
-                        }}
-                      >
-                        {" "}
-                        Rs.
-                        <span style={{ textDecoration: "line-through" }}>
-                          {`${selectedImage.off_price}`}{" "}
-                        </span>
-                      </p>
+                      
                       <p style={{ color: "#ee9d20" }}>
                         <b style={{ fontSize: "22px" }}>
                           {" "}
@@ -147,7 +175,7 @@ const Details = () => {
                         marginTop: "-5px",
                       }}
                     >
-                      <p>SselectedImageCT SIZE </p>
+                     
 
                       <p
                         style={{
@@ -160,7 +188,7 @@ const Details = () => {
                       >{`SIZE CHART >`}</p>
                     </div>
                     <div style={{ display: "flex", gap: "10px" }}>
-                      {selectedImage.sizes.map((selectedImage) => {
+                      {sizes.map((selectedImage) => {
                         return (
                           <SizesDIv>
                             <p>{selectedImage}</p>
@@ -193,6 +221,18 @@ const Details = () => {
                         <p>WISHLIST</p>
                       </b>
                     </WishDiv>
+
+                    <TryONDiv
+                      
+                    >
+                      {/* <ShoppingBagIcon /> */}
+                      <a onClick={handleSubmit(selectedImage)}>
+                      <p>
+                        <b>TRY ON</b>
+                      </p>
+                      </a>
+                      
+                    </TryONDiv>
                   </div>
                   <div
                     style={{

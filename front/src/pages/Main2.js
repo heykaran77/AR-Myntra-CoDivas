@@ -8,7 +8,7 @@ const Main2 = () => {
   return (
     <>
     <Navbar/>
-    <div style={{ display: "flex" }}>
+    <div style={{ display: "flex" , marginTop:'1em'}}>
         <Brandfilter/>
         <Card/>
           </div>

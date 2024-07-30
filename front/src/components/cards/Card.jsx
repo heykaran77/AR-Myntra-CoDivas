@@ -33,30 +33,31 @@ function Card() {
   const [loading,setLoading] = useState(true)
   
 
-  //   const fetchData = async () => {
-  //     try {
-  //         setLoading(false)
-  //         const response = await axios.get(`http://localhost:8000/get_myntra_data`)
-  //         if (response.status == 200) {
-  //             console.log(response.data)
-  //             setData(response.data)
-  //             setLoading(true)
-  //         }
+    const fetchData = async () => {
+      try {
+          setLoading(false)
+          const response = await axios.get(`http://localhost:8000/get_myntra_data`)
+          if (response.status == 200) {
+              console.log('Hiii')
+              console.log(response.data)
+              setData(response.data)
+              setLoading(true)
+          }
         
-  //     } catch (err) {
-  //         Swal.fire({
-  //             icon: 'error',
-  //             title: 'Oops...',
-  //             text: 'Something went wrong!',
-  //         })
-  //     }
-  // }
-  // useEffect(() => {
-  //     fetchData();
-  // }, [])
+      } catch (err) {
+          Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Something went wrong!',
+          })
+      }
+  }
+  useEffect(() => {
+      fetchData();
+  }, [])
 
   const handleMove = (ele) => {
-    navigate(`/single/${ele.id}`)
+    navigate(`/catalog/single/${ele.product_id}`)
     console.log(ele)
     setSelectedImage(ele)
   }
@@ -97,7 +98,7 @@ function Card() {
   return (
     <div>
       <TopDiv>
-        <div style={{ display: "flex", gap:"20px",  marginLeft:"20px"}}>
+        <div style={{ display: "flex", gap:"20px",  marginLeft:"20px",marginTop:'1em',marginBottom:'1em'}}>
           <BundlesDiv  onMouseEnter={handleEnterBundle} onMouseLeave={handleLeaveBundle} flag={flagBundle}>
             <p style={{ margin:"-2px 2px 2px 2px"  , alignItems :"center" , display:"flex" }}>Bundles <ExpandMoreIcon/> </p>
           </BundlesDiv>   
@@ -114,7 +115,7 @@ function Card() {
       <ContainerDiv>
       {
                         !loading && 
-                            <Box>
+                            <Box display='flex' justifyContent='center' alignItems='center'>
                             <div class="three-body">
                             <div class="three-body__dot"></div>
                             <div class="three-body__dot"></div>
@@ -138,7 +139,7 @@ function Card() {
                 >
                   <CardDiv flag={ele.mouse}>
                     <img
-                      src={`${ele.images.image1}`}
+                      src={`${ele.img}`}
                       style={{ width: "100%", height: "100%" }}
                     ></img>
                   </CardDiv>
@@ -153,7 +154,7 @@ function Card() {
                         }}
                       >
                         <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                          {ele.brand}
+                          {ele.seller}
                         </p>
                       </div>
                       <div
@@ -170,7 +171,7 @@ function Card() {
                             fontSize: "12px",
                           }}
                         >
-                          {ele.title}
+                          {ele.name}
                         </p>
                       </div>
 
@@ -195,8 +196,8 @@ function Card() {
                           500
                         </p>
                         <p style={{ fontSize: "12px", color: "orange" }}>
-                          {/* {ele.discount ? `(${ele.discount}% OFF)` : "NA"} */}
-                          200
+                          {ele.discount ? `(${ele.discount}% OFF)` : "NA"}
+                          
                         </p>
                       </div>
                     </DescDiv>
