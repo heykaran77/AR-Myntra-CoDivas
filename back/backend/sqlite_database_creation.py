@@ -10,6 +10,7 @@ df = pd.read_csv(csv_file_path)
 
 # Drop the unnamed columns
 df.drop(df.columns[[0, 1]], axis=1, inplace=True)
+df.dropna(inplace=True)
 
 # Define the SQLite database directory
 sqlite_db_dir = './back/backend/sqlite_database'
