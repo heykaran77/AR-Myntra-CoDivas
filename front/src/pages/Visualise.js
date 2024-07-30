@@ -23,7 +23,7 @@ import { useState } from 'react';
 import { ImageContext } from '../context/ImageContext';
 import { useEffect, useContext } from 'react';
 import axios from 'axios'
-import x from './rag.jpeg'
+import x from './output_image6.png'
 import SearchIcon from "@mui/icons-material/Search";
 
 const linkStyle = {
@@ -105,6 +105,14 @@ const Visualise = () => {
     //       console.error('Error submitting feedback:', error);
     //     });   
     setCurrent(x)
+    setOriginal({
+      brand:'Roadster',
+      name:'Lacy Black Corset Top Womens',
+      price:'799',
+      discount: 45,
+      img: 'https://assets.myntassets.com/f_webp,dpr_2.8,q_60,w_210,c_limit,fl_progressive/assets/images/22689046/2023/4/26/740c72e7-c08e-4cfe-84af-d4d32a05abbc1682494109146-Urban-Revivo-Shoulder-Straps-Corset-Style-Crop-Top-347168249-1.jpg'
+    })
+    setShowNext(false)
     
 
   }
@@ -249,7 +257,7 @@ const Visualise = () => {
                         </p>
                         
                         <p style={{ fontSize: "12px", color: "orange" }}>
-                        {original.discount}
+                        {original.discount}% OFF
                           
                         </p>
                       </div>
