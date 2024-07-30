@@ -1,4 +1,19 @@
-import styled from "styled-components";
+import styled, { keyframes } from 'styled-components';
+
+const pulse = keyframes`
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+`;
+
+
+
 
 export const DetailsMainDiv = styled.div`
   border: 1px solid black;
@@ -70,6 +85,24 @@ export const BagDiv = styled.div`
 }
 `;
 
+
+export const TryONDiv = styled.div`
+  width: 200px;
+  display: flex;
+  height: 50px;
+  border-radius: 4px;
+  background-color: #e7396a;
+  color: white;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+  animation: ${pulse} 1s infinite;
+  &:hover {
+    visibility: 0.5%;
+  }
+`;
+
 export const SizesDIv = styled.div`
   display: flex;
   width: 40px;
@@ -90,8 +123,8 @@ export const SizesDIv = styled.div`
 export const RatingDiv = styled.div`
 display: flex;
 border: 0.3px solid lightgray;
-width:150px;
-height:20px;
+width:180px;
+height:28px;
 padding:7px 5px;
 margin-bottom: 15px;
 font-size:16px;
