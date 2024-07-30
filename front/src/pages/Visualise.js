@@ -19,7 +19,6 @@ import {
   TryONDiv
 } from "../components/Details/detailStyled2";
 
-
 import { useState } from 'react';
 import { ImageContext } from '../context/ImageContext';
 import { useEffect, useContext } from 'react';
@@ -34,26 +33,47 @@ const linkStyle = {
 };
 
 const Visualise = () => {
-  const { responseImages,setResponseImages } = useContext(ImageContext);
+  const { responseImages,setResponseImages,intial,setInitial,original,setOriginal,recommended,setRecommended,showNext,setShowNext,current,setCurrent,details,setDetails } = useContext(ImageContext);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [feedbackArray, setFeedbackArray] = useState([]);
+  const [feedback, setFeedback] = useState({
+    positive_feedback: [],
+    negative_feedback: []
+  });
   const [search,setSearch] = useState(null);
-  
+  const [responseSearch,setResponseSearch] = useState([])
 
-  const handleClick = (feedback) => {
-    if (currentIndex < responseImages.length) {
-      const currentImage = responseImages[currentIndex];
-      const newFeedback = `${currentImage} ${feedback}`;
-      setFeedbackArray([...feedbackArray, newFeedback]);
-      setCurrentIndex(currentIndex + 1);
+  const handleClick = (feedback,category) => {
+    if (currentIndex < recommended.length) {
+      setFeedback((prevFeedback) => {
+        const updatedFeedback = { ...prevFeedback };
+        if (feedback === 'positive') {
+          updatedFeedback.positive_feedback.push(category);
+        } else {
+          updatedFeedback.negative_feedback.push(category);
+        }
+        return updatedFeedback;
+      });
+
+      if (showNext) {
+        setCurrentIndex(currentIndex + 1);
+      }
+      else {
+        setShowNext(true)
+      }
+
+      
     }
     else{
-        axios.post('http://localhost:8000/submit-feedback', { feedback: feedbackArray })
+        axios.post('http://localhost:8000/submit-feedback', feedback)
         .then(response => {
           console.log('Feedback submitted:', response.data);
-          setResponseImages(response.data.images); 
-          setFeedbackArray([]);
-          setCurrentIndex(0);
+          const { fitted_img, original_details, recommended_details } = response.data;
+          setInitial(fitted_img);
+          setOriginal(original_details);
+          setRecommended(recommended_details);
+          setCurrent(fitted_img)
+          setDetails(original_details)
+          setShowNext(false)
         })
         .catch(error => {
           console.error('Error submitting feedback:', error);
@@ -61,22 +81,31 @@ const Visualise = () => {
     }
   };
 
-  const currentImage = responseImages[currentIndex];
-  console.log(currentImage)
+  
+  useEffect(() => {
+    if (!current) {
+      setCurrent(intial);
+    } else if (showNext && currentIndex < recommended.length) {
+      const currentImage = recommended[currentIndex].fitted_img;
+      setCurrent(currentImage);
+    }
+  }, [currentIndex, recommended, showNext]);
 
   const handleSearch = (event) =>
   {
     event.preventDefault();
-    axios.post('http://localhost:8000/get_images', { search:search })
-        .then(response => {
-          console.log('Feedback submitted:', response.data);
-          setResponseImages(response.data.images); 
-          setFeedbackArray([]);
-          setCurrentIndex(0);
-        })
-        .catch(error => {
-          console.error('Error submitting feedback:', error);
-        });   
+    // axios.post('http://localhost:8000/get_images', { search:search })
+    //     .then(response => {
+    //       console.log('Feedback submitted:', response.data);
+    //       setResponseImages(response.data.images); 
+    //       // setFeedbackArray([]);
+    //       setCurrentIndex(0);
+    //     })
+    //     .catch(error => {
+    //       console.error('Error submitting feedback:', error);
+    //     });   
+    setCurrent(x)
+    
 
   }
 
@@ -121,7 +150,7 @@ const Visualise = () => {
           <Grid item xs={8}>
             <Grid container>
             <Grid item lg={3.5} md={3.5} sm={4} xs={4} className='flex justify-center items-center'>
-            <button onClick={() => handleClick('Negative')}>
+            <button onClick={() => handleClick('Negative',details.subcategory)}>
               <svg className="h-16 w-16 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="15" y1="9" x2="9" y2="15" />
@@ -130,16 +159,16 @@ const Visualise = () => {
             </button>
           </Grid>
 
-          <Grid item lg={5} md={5} sm={8} xs={8} className='bg-blue-100 flex justify-center items-center' sx={{ height: '80vh', borderRadius: '1em' }}>
-  {currentImage ? (
-    <img src={currentImage} alt="Current" className="w-full h-full object-cover" style={{ borderRadius: '1em' }} />
-  ) : (
-    <p>Loading...</p>
-  )}
-</Grid>
+                  <Grid item lg={5} md={5} sm={8} xs={8} className='bg-blue-100 flex justify-center items-center' sx={{ height: '80vh', borderRadius: '1em' }}>
+          {current ? (
+            <img src={current} alt="Current" className="w-full h-full object-cover" style={{ borderRadius: '1em' }} />
+          ) : (
+            <p>Loading...</p>
+          )}
+        </Grid>
 
           <Grid item lg={3.5} md={3.5} sm={4} xs={4} className='flex justify-center items-center'>
-            <button onClick={() => handleClick('Positive')}>
+            <button onClick={() => handleClick('Positive',details.subcategory)}>
               <svg className="h-16 w-16 text-green-500" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" />
                 <circle cx="12" cy="12" r="9" />
@@ -165,7 +194,7 @@ const Visualise = () => {
                 >
                   <CardDiv >
                     <img
-                      // src={`${}`}
+                      src={`${original.img}`}
                       style={{ width: "100%", height: "100%" }}
                     ></img>
                   </CardDiv>
@@ -180,8 +209,7 @@ const Visualise = () => {
                         }}
                       >
                         <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                          {/* {ele.seller} */}
-                          road
+                          {original.brand}
                         </p>
                       </div>
                       <div
@@ -198,8 +226,8 @@ const Visualise = () => {
                             fontSize: "12px",
                           }}
                         >
-                          {/* {ele.name} */}
-                          hi
+                          {original.brand}
+                          
                         </p>
                       </div>
 
@@ -217,22 +245,11 @@ const Visualise = () => {
                         <p
                           style={{ fontSize: "12px", fontWeight: "bold" }}
                         >
-                          {/* {`Rs ${ele.price}`} */}
-                          400
+                          {original.price}
                         </p>
-                        <p
-                          style={{
-                            fontSize: "12px",
-                            textDecorationLine: "line-through",
-                          }}
-                        >
-                          {/* {ele.off_price ? `Rs ${ele.off_price}` : "NA"} */}
-                          500
-                        </p>
+                        
                         <p style={{ fontSize: "12px", color: "orange" }}>
-                          {/* {ele.discount ? `(${ele.discount}% OFF)` : "NA"}
-                           */}
-                           10
+                        {original.discount}
                           
                         </p>
                       </div>
@@ -252,7 +269,9 @@ const Visualise = () => {
                   
                 </MainDiv>
 
-                <MainDiv
+                {
+                  showNext && currentIndex < recommended.length &&
+                  <MainDiv
                   // onMouseEnter={() => {
                   //   handleEnter(ele);
                   // }}
@@ -264,7 +283,7 @@ const Visualise = () => {
                 >
                   <CardDiv >
                     <img
-                      // src={`${}`}
+                      src={`${recommended[currentIndex].img}`}
                       style={{ width: "100%", height: "100%" }}
                     ></img>
                   </CardDiv>
@@ -279,8 +298,8 @@ const Visualise = () => {
                         }}
                       >
                         <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                          {/* {ele.seller} */}
-                          road
+                        {recommended[currentIndex].brand}
+                          
                         </p>
                       </div>
                       <div
@@ -297,8 +316,8 @@ const Visualise = () => {
                             fontSize: "12px",
                           }}
                         >
-                          {/* {ele.name} */}
-                          hi
+                          {recommended[currentIndex].name}
+                          
                         </p>
                       </div>
 
@@ -314,22 +333,11 @@ const Visualise = () => {
                         <p
                           style={{ fontSize: "12px", fontWeight: "bold" }}
                         >
-                          {/* {`Rs ${ele.price}`} */}
-                          400
+                          {recommended[currentIndex].price}
                         </p>
-                        <p
-                          style={{
-                            fontSize: "12px",
-                            textDecorationLine: "line-through",
-                          }}
-                        >
-                          {/* {ele.off_price ? `Rs ${ele.off_price}` : "NA"} */}
-                          500
-                        </p>
+                        
                         <p style={{ fontSize: "12px", color: "orange" }}>
-                          {/* {ele.discount ? `(${ele.discount}% OFF)` : "NA"}
-                           */}
-                           10
+                        {recommended[currentIndex].discount}
                           
                         </p>
                       </div>
@@ -347,6 +355,10 @@ const Visualise = () => {
                     </DescDiv>
                   
                 </MainDiv>
+
+                }
+
+                
                 </div>
             </div>
             

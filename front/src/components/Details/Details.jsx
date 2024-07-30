@@ -27,9 +27,11 @@ import {useNavigate} from 'react-router-dom'
 
 const Details = () => {
     
-  const {data,setData,selectedImage,setSelectedImage,responseImages,setResponseImages} = useContext(ImageContext)
+  const {data,setData,selectedImage,setSelectedImage,responseImages,setResponseImages,intial,setInitial,original,setOriginal,recommended,setRecommended,showNext,setShowNext,current,setCurrent,details,setDetails} = useContext(ImageContext)
   const navigate = useNavigate()
     const sizes = ['XS','S','M','L','XL']
+
+    
 
     const handleSubmit = (item) => {
       // setSelectedImage(item.img);
@@ -42,7 +44,13 @@ const Details = () => {
       })
       .then(response => {
         console.log('Response received:', response.data);
-        setResponseImages(response.data.images);
+        const { fitted_img, original_details, recommended_details } = response.data;
+        setInitial(fitted_img);
+        setOriginal(original_details);
+        setRecommended(recommended_details);
+        setCurrent(fitted_img)
+        setDetails(original_details)
+        // setResponseImages(response.data.images);
         navigate('/visualise');
       })
       .catch(error => {
@@ -58,7 +66,7 @@ const Details = () => {
   return (
     <>
             <Navbar />
-            <DetailsMainDiv key={selectedImage.product_id}>
+            <DetailsMainDiv key={selectedImage.img}>
               <ImageContainer style={{display:'flex',justifyContent:'center'}}>
                 <ImgDiv>
                   <Img src={selectedImage.img} />
