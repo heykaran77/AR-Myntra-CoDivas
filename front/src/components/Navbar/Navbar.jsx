@@ -19,7 +19,7 @@ import MailIcon from "@mui/icons-material/Mail";
 const MainDiv = styled.div`
   display: grid;
   grid-template-columns: 100px 600px 500px 200px;
-  background-color: whitesmoke;
+  background-color: white;
   justify-content: space-around;
   height: 80px;
   box-shadow: 0 4px 12px 0 rgb(0 0 0 / 5%);
@@ -48,7 +48,7 @@ const searchBar = {
   display: "flex",
   marginTop: "25px",
   paddingLeft: "80px",
-  backgroundColor: "whitesmoke",
+  backgroundColor: "white",
 };
 function Navbar() {
   const navigate = useNavigate()
@@ -891,9 +891,9 @@ function Navbar() {
                 type="text"
                 placeholder="Search for products brands and more"
                 style={{
-                  width: "300px",
-                  height: "22px",
-                  background: "white",
+                  width: "400px",
+                  height: "42px",
+                  background: "whitesmoke",
                   marginTop: "0px",
                   border: "none",
                 }}

@@ -15,14 +15,14 @@ function App() {
 
    return (
     <ImageProvider>
-<BrowserRouter>
+    <BrowserRouter>
     <Routes>
       <Route path="/visualise" element={<Visualise/>}/>
-      <Route path="/catalog" element={<Main/>}/>
-      <Route path="/" element={<Main2/>}/>
-      <Route extact path="/single/:id" element={<Details/>} />
+      <Route path="/catalog" element={<Main2/>}/>
+      {/* <Route path="/" element={<Main2/>}/> */}
+      <Route extact path="/catalog/single/:id" element={<Details/>} />
 
-      {/* <Route path="/" element={<Upload/>}/> */}
+      <Route path="/" element={<Upload/>}/>
       
     </Routes>
  </BrowserRouter>

@@ -57,7 +57,7 @@ function Card() {
   }, [])
 
   const handleMove = (ele) => {
-    navigate(`/single/${ele.product_id}`)
+    navigate(`/catalog/single/${ele.product_id}`)
     console.log(ele)
     setSelectedImage(ele)
   }
@@ -98,7 +98,7 @@ function Card() {
   return (
     <div>
       <TopDiv>
-        <div style={{ display: "flex", gap:"20px",  marginLeft:"20px", marginTop:'2em',marginBottom:'1em'}}>
+        <div style={{ display: "flex", gap:"20px",  marginLeft:"20px",marginTop:'1em',marginBottom:'1em'}}>
           <BundlesDiv  onMouseEnter={handleEnterBundle} onMouseLeave={handleLeaveBundle} flag={flagBundle}>
             <p style={{ margin:"-2px 2px 2px 2px"  , alignItems :"center" , display:"flex" }}>Bundles <ExpandMoreIcon/> </p>
           </BundlesDiv>   
