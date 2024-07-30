@@ -26,41 +26,49 @@ import {useNavigate} from 'react-router-dom'
 
 
 const Details = () => {
+  const navigate = useNavigate()
     
   const {data,setData,selectedImage,setSelectedImage,responseImages,setResponseImages,intial,setInitial,original,setOriginal,recommended,setRecommended,showNext,setShowNext,current,setCurrent,details,setDetails} = useContext(ImageContext)
-  const navigate = useNavigate()
     const sizes = ['XS','S','M','L','XL']
 
     
+    
+    // useEffect(() => {
+    //   const handleSubmit = (item) => {
+    //     console.log('Submitting data:', item);
+        
+    //     axios.post('http://localhost:8000/get_recommendations', item, {
+    //       headers: {
+    //         'Content-Type': 'application/json'
+    //       }
+    //     })
+    //     .then(response => {
+    //       console.log('Response received:', response.data);
+    //       const { fitted_img, original_details, recommended_details } = response.data;
+    //       setInitial(fitted_img);
+    //       setOriginal(original_details);
+    //       setRecommended(recommended_details);
+    //       setCurrent(fitted_img)
+    //       setDetails(original_details)
+    //       navigate('/visualise');
+    //     })
+    //     .catch(error => {
+    //         Swal.fire({
+    //             icon: 'error',
+    //             title: 'Oops...',
+    //             text: 'Something went wrong!',
+    //         })
+    //       console.error('Error uploading data:', error);
+    //     });
+    //   };
+  
+    //   if (item) {
+    //     handleSubmit(item);
+    //   }
+    // }, [item]); // Run the effect when `item` changes
 
-    const handleSubmit = (item) => {
-      // setSelectedImage(item.img);
-      console.log('Submitting data:', item);
-      navigate('/visualise')
-      axios.post('http://localhost:8000/get_recommendations', item, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(response => {
-        console.log('Response received:', response.data);
-        const { fitted_img, original_details, recommended_details } = response.data;
-        setInitial(fitted_img);
-        setOriginal(original_details);
-        setRecommended(recommended_details);
-        setCurrent(fitted_img)
-        setDetails(original_details)
-        // setResponseImages(response.data.images);
-        navigate('/visualise');
-      })
-      .catch(error => {
-          Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: 'Something went wrong!',
-          })
-        console.error('Error uploading data:', error);
-      });
+    const handleNavigation = () => {
+      navigate('/visualise');
     };
 
   return (
@@ -226,7 +234,7 @@ const Details = () => {
                       
                     >
                       {/* <ShoppingBagIcon /> */}
-                      <a onClick={handleSubmit(selectedImage)}>
+                      <a onClick={handleNavigation}>
                       <p>
                         <b>TRY ON</b>
                       </p>

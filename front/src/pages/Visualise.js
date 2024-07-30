@@ -64,20 +64,20 @@ const Visualise = () => {
       
     }
     else{
-        axios.post('http://localhost:8000/submit-feedback', feedback)
-        .then(response => {
-          console.log('Feedback submitted:', response.data);
-          const { fitted_img, original_details, recommended_details } = response.data;
-          setInitial(fitted_img);
-          setOriginal(original_details);
-          setRecommended(recommended_details);
-          setCurrent(fitted_img)
-          setDetails(original_details)
-          setShowNext(false)
-        })
-        .catch(error => {
-          console.error('Error submitting feedback:', error);
-        });
+        // axios.post('http://localhost:8000/submit-feedback', feedback)
+        // .then(response => {
+        //   console.log('Feedback submitted:', response.data);
+        //   const { fitted_img, original_details, recommended_details } = response.data;
+        //   setInitial(fitted_img);
+        //   setOriginal(original_details);
+        //   setRecommended(recommended_details);
+        //   setCurrent(fitted_img)
+        //   setDetails(original_details)
+        //   setShowNext(false)
+        // })
+        // .catch(error => {
+        //   console.error('Error submitting feedback:', error);
+        // });
     }
   };
 
