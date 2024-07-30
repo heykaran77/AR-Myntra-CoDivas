@@ -25,8 +25,8 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
-UPLOAD_DIR = "./backend/uploaded_user_images"
-SQLITE_DB_PATH = "./backend/sqlite_database/myntra.db"
+UPLOAD_DIR = "./back/backend/uploaded_user_images"
+SQLITE_DB_PATH = "./back/backend/sqlite_database/myntra.db"
 Path(UPLOAD_DIR).mkdir(parents=True, exist_ok=True)
 
 user_preferences = {"positive": {}, "negative": {}}
@@ -59,13 +59,16 @@ async def get_fitted_images(images):
     for image in images:
         if image["main_category"] == "Top Wear":
             print(image['extract_images'])
-            tasks.append(viton_model(f"back\\backend\\output\\{image['extract_images']}", "Upper-body"))
+            image_path = os.path.join("back", "backend", "output", image['extract_images'])
+            tasks.append(viton_model(image_path, "Upper-body"))
         elif image["main_category"] == "Bottom Wear":
             print(image['extract_images'])
-            tasks.append(viton_model(f"back\\backend\\output\\{image['extract_images']}", "Lower-body"))
+            image_path = os.path.join("back", "backend", "output", image['extract_images'])
+            tasks.append(viton_model(image_path, "Lower-body"))
         elif image["main_category"] == "Dress (Full Length)":
             print(image['extract_images'])
-            tasks.append(viton_model(f"back\\backend\\output\\{image['extract_images']}", "Dress"))
+            image_path = os.path.join("back", "backend", "output", image['extract_images'])
+            tasks.append(viton_model(image_path, "Dress"))
                 
     results = await asyncio.gather(*tasks)
     

@@ -14,7 +14,7 @@ os.environ["GOOGLE_API_KEY"] = os.environ["GEMINI_API_KEY"]
 
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
 
-CHROMADB_PATH = "./backend/chromadb_database"
+CHROMADB_PATH = "./back/backend/chromadb_database"
 
 chromadb_client = chromadb.PersistentClient(path=CHROMADB_PATH)
 embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="thenlper/gte-base")
