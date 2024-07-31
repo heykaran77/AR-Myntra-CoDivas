@@ -25,8 +25,9 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
-UPLOAD_DIR = "./back/backend/uploaded_user_images"
-SQLITE_DB_PATH = "./back/backend/sqlite_database/myntra.db"
+UPLOAD_DIR = os.getenv("UPLOADED_USER_IMAGES_FOLDER")
+SQLITE_DB_PATH = os.path.join(os.getenv("SQLITE_DB_PATH"), "myntra.db")
+
 Path(UPLOAD_DIR).mkdir(parents=True, exist_ok=True)
 
 user_preferences = {"positive": {}, "negative": {}}
@@ -35,40 +36,61 @@ visited_items = set()
 @app.post("/get_images")
 async def get_images(search: dict):
     query = search["query"]
-    print(query)
-    images, categories = get_images_using_llm(query)
+    print("Search Query:", query)
+    images, categories, names, sellers, prices, discounts  = get_images_using_llm(query)
     image_1 = images[0]
-    print(image_1)
+    print("Cloth Match:", names[0])
     category_1= categories[0]
     print(category_1)
     
-    final_image = await viton_model(image_1, category_1) # along with these parameters, we can also pass the user image
+    images_details = []
+    images_details.append(
+        {
+            "image": image_1,
+            "name": names[0],
+            "seller": sellers[0],
+            "price": prices[0],
+            "discount": discounts[0]
+        }
+    )
+    
+    final_image = await viton_model(cloth_image_path=image_1, cloth_category=category_1) # along with these parameters, we can also pass the user image
     
     try:
         image_2 = images[1]
+        print("Cloth Match:", names[1])
         category_2 = categories[1]
-        final_image = await viton_model(image_2, category_2, final_image)
+        print(category_2)
+        final_image = await viton_model(cloth_image_path=image_2, cloth_category=category_2, person_image_path=final_image)
         
-    except:
-        pass
+        images_details.append(
+            {
+                "image": image_2,
+                "name": names[1],
+                "seller": sellers[1],
+                "price": prices[1],
+                "discount": discounts[1]
+            }
+        )
+    except Exception as e:
+        print(e)
+        pass # this means there was only one image which is possible
     
-    return {"images": f"{final_image}"}
-# C:\Users\shrey\Desktop\college\myntra\Myntra-CoDivas\back\backend\output\6814_extracted.png
+    
+    return {
+        "image": f"{final_image}",
+        "details": images_details
+    }
+
 async def get_fitted_images(images):
     tasks = []
     for image in images:
         if image["main_category"] == "Top Wear":
-            print(image['extract_images'])
-            image_path = os.path.join("back", "backend", "output", image['extract_images'])
-            tasks.append(viton_model(cloth_image_path=image_path, cloth_category="Upper-body"))
+            tasks.append(viton_model(cloth_image_path=image["extract_images"], cloth_category="Upper-body"))
         elif image["main_category"] == "Bottom Wear":
-            print(image['extract_images'])
-            image_path = os.path.join("back", "backend", "output", image['extract_images'])
-            tasks.append(viton_model(cloth_image_path=image_path, cloth_category="Lower-body"))
+            tasks.append(viton_model(cloth_image_path=image["extract_images"], cloth_category="Lower-body"))
         elif image["main_category"] == "Dress (Full Length)":
-            print(image['extract_images'])
-            image_path = os.path.join("back", "backend", "output", image['extract_images'])
-            tasks.append(viton_model(cloth_image_path=image_path, cloth_category="Dress"))
+            tasks.append(viton_model(cloth_image_path=image["extract_images"], cloth_category="Dress"))
                 
     results = await asyncio.gather(*tasks)
     
@@ -79,6 +101,7 @@ async def get_fitted_images(images):
 async def get_recommendations(data: dict):
     main_category = data["main_category"]
     target_audience = data["target_audience"]
+    extracted_image = data['extract_images']
 
     if main_category == "Top Wear":
         recommended_category = "Bottom Wear"
@@ -91,14 +114,15 @@ async def get_recommendations(data: dict):
         
     trendy_products = get_top_products(recommended_category, target_audience)
     
-    seasonal_top_products = trendy_products["seasonal_top_products"][0:3]
-    fashion_trend_products = trendy_products["fashion_trend_products"][0:3]
+    # seasonal_top_products = trendy_products["seasonal_top_products"]
+    fashion_trend_products = trendy_products["fashion_trend_products"]
     
     # Filter out products that have been visited
     filtered_products = [product for product in fashion_trend_products if "img" in product]
     
     # Update visited items
     visited_items.update([product["img"] for product in filtered_products])
+    print(user_preferences)
     
     def adjust_weights():
         weights = {}
@@ -116,28 +140,49 @@ async def get_recommendations(data: dict):
         return weights
     # Adjust weights based on feedback
     weights = adjust_weights()
+    print(weights)
     
     # Apply weights to filter and sort the products
     def weighted_sort(product):
         subcat = product.get("subcategory", "")
         return weights.get(subcat, 1)
     
+    # print(fashion_trend_products)
+    # print("#############################")
     # Sort and slice the lists
     # seasonal_top_products = sorted(seasonal_top_products, key=weighted_sort, reverse=True)[0]
     fashion_trend_products = sorted(filtered_products, key=weighted_sort, reverse=True)[:3]
     print("fashion: ",len(fashion_trend_products))
+    # print(fashion_trend_products)
     # Verify the data passed to get_fitted_images
     if any(not isinstance(product, dict) for product in fashion_trend_products):
         return {"error": "Invalid data format: Each item in 'fashion_trend_products' should be a dictionary"}
     
     # Get fitted images
     fitted_images = await get_fitted_images(fashion_trend_products)
+    
+    recommended_images_details = [
+        {
+            "fitted_image": fitted_images["images"][i],
+            "original_image": fashion_trend_products[i]["img"],
+            "seller": fashion_trend_products[i]["seller"],
+            "price": fashion_trend_products[i]["price"],
+            "discount": fashion_trend_products[i]["discount"],
+        }
+        for i in range(len(fashion_trend_products))
+    ]
 
-    return {"fitted_images": fitted_images}
+    return {
+        "selected_image": extracted_image,
+        "recommended_images": recommended_images_details
+        
+    }
 
 
 @app.post("/feedback")
 async def feedback(positive_feedback: List[str], negative_feedback: List[str]):
+    print(positive_feedback)
+    print(negative_feedback)
     for subcat in positive_feedback:
         user_preferences["positive"][subcat] = user_preferences["positive"].get(subcat, 0) + 1
     
