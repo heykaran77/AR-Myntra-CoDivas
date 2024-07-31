@@ -33,39 +33,38 @@ const Details = () => {
 
     
     
-    // useEffect(() => {
-    //   const handleSubmit = (item) => {
-    //     console.log('Submitting data:', item);
-        
-    //     axios.post('http://localhost:8000/get_recommendations', item, {
-    //       headers: {
-    //         'Content-Type': 'application/json'
-    //       }
-    //     })
-    //     .then(response => {
-    //       console.log('Response received:', response.data);
-    //       const { fitted_img, original_details, recommended_details } = response.data;
-    //       setInitial(fitted_img);
-    //       setOriginal(original_details);
-    //       setRecommended(recommended_details);
-    //       setCurrent(fitted_img)
-    //       setDetails(original_details)
-    //       navigate('/visualise');
-    //     })
-    //     .catch(error => {
-    //         Swal.fire({
-    //             icon: 'error',
-    //             title: 'Oops...',
-    //             text: 'Something went wrong!',
-    //         })
-    //       console.error('Error uploading data:', error);
-    //     });
-    //   };
+    useEffect(() => {
+      const handleSubmit = (item) => {
+        console.log('Submitting data:', item);   
+        axios.post('http://localhost:8000/get_recommendations', item, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => {
+          console.log('Response received:', response.data);
+             const fitted_img = response.data.fitted_img    //path 
+            
+             const recommended_details = response.data.recommended_details
+          setInitial(fitted_img);
+          setOriginal(item);
+          setRecommended(recommended_details);
+          setCurrent(fitted_img)
+          setDetails(item)
+          navigate('/visualise');
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong!',
+            })
+          console.error('Error uploading data:', error);
+        });
+      };
   
-    //   if (item) {
-    //     handleSubmit(item);
-    //   }
-    // }, [item]); // Run the effect when `item` changes
+      
+    }); // Run the effect when `item` changes
 
     const handleNavigation = () => {
       navigate('/visualise');

@@ -41,6 +41,7 @@ const Visualise = () => {
   });
   const [search,setSearch] = useState(null);
   const [responseSearch,setResponseSearch] = useState([])
+  const [rec,setRec] = useState(false)
 
   const handleClick = (feedback,category) => {
     if (currentIndex < recommended.length) {
@@ -64,20 +65,20 @@ const Visualise = () => {
       
     }
     else{
-        // axios.post('http://localhost:8000/submit-feedback', feedback)
-        // .then(response => {
-        //   console.log('Feedback submitted:', response.data);
-        //   const { fitted_img, original_details, recommended_details } = response.data;
-        //   setInitial(fitted_img);
-        //   setOriginal(original_details);
-        //   setRecommended(recommended_details);
-        //   setCurrent(fitted_img)
-        //   setDetails(original_details)
-        //   setShowNext(false)
-        // })
-        // .catch(error => {
-        //   console.error('Error submitting feedback:', error);
-        // });
+        axios.post('http://localhost:8000/submit-feedback', feedback)
+        .then(response => {
+          console.log('Feedback submitted:', response.data);
+          const fitted_img = response.data.fitted_img    //path 
+          const recommended_details = response.data.recommended_details
+          setInitial(fitted_img);
+          setRecommended(recommended_details);
+          setCurrent(fitted_img)
+          setShowNext(false)
+          setCurrentIndex(0)
+        })
+        .catch(error => {
+          console.error('Error submitting feedback:', error);
+        });
     }
   };
 
@@ -94,25 +95,30 @@ const Visualise = () => {
   const handleSearch = (event) =>
   {
     event.preventDefault();
-    // axios.post('http://localhost:8000/get_images', { search:search })
-    //     .then(response => {
-    //       console.log('Feedback submitted:', response.data);
-    //       setResponseImages(response.data.images); 
-    //       // setFeedbackArray([]);
-    //       setCurrentIndex(0);
-    //     })
-    //     .catch(error => {
-    //       console.error('Error submitting feedback:', error);
-    //     });   
-    setCurrent(x)
-    setOriginal({
-      brand:'Roadster',
-      name:'Lacy Black Corset Top Womens',
-      price:'799',
-      discount: 45,
-      img: 'https://assets.myntassets.com/f_webp,dpr_2.8,q_60,w_210,c_limit,fl_progressive/assets/images/22689046/2023/4/26/740c72e7-c08e-4cfe-84af-d4d32a05abbc1682494109146-Urban-Revivo-Shoulder-Straps-Corset-Style-Crop-Top-347168249-1.jpg'
-    })
-    setShowNext(false)
+    axios.post('http://localhost:8000/get_images', { query:search })
+        .then(response => {
+          console.log('Feedback submitted:', response.data);
+             const fitted_img = response.data.fitted_img
+             const details = response.data.details
+             setCurrent(fitted_img)
+             setOriginal(details)
+             setShowNext(false)
+             setRec(true)
+        })
+        .catch(error => {
+          console.error('Error submitting feedback:', error);
+
+        });   
+    // setCurrent(x)
+    // setOriginal({
+    //   brand:'Roadster',
+    //   name:'Lacy Black Corset Top Womens',
+    //   price:'799',
+    //   discount: 45,
+    //   img: 'https://assets.myntassets.com/f_webp,dpr_2.8,q_60,w_210,c_limit,fl_progressive/assets/images/22689046/2023/4/26/740c72e7-c08e-4cfe-84af-d4d32a05abbc1682494109146-Urban-Revivo-Shoulder-Straps-Corset-Style-Crop-Top-347168249-1.jpg'
+    // })
+    // setShowNext(false)
+    // setRec(true)
     
 
   }
@@ -190,8 +196,83 @@ const Visualise = () => {
             <div style={{display:'flex' , alignItems:'center',flexDirection:'column'}}>
               <Typography style={linkStyle}>ITEMS IN THE IMAGE</Typography>
             <div style={{display:'flex' , justifyContent:'center',flexDirection:'row',marginTop:'1em'}}>
-
-              <MainDiv
+              {
+                rec && 
+                (original.map((original, index) => (
+                  <MainDiv key={index}>
+                    <CardDiv>
+                      <img
+                        src={`${original.img}`}
+                        style={{ width: "100%", height: "100%" }}
+                      />
+                    </CardDiv>
+                
+                    <DescDiv>
+                      <div
+                        style={{
+                          overflow: "hidden",
+                          height: "35px",
+                          margin: "-10px 8px",
+                          textAlign: "left",
+                        }}
+                      >
+                        <p style={{ fontWeight: "bold", fontSize: "12px" }}>
+                          {original.brand}
+                        </p>
+                      </div>
+                      <div
+                        style={{
+                          overflow: "hidden",
+                          height: "32px",
+                          margin: "-15px 8px",
+                          textAlign: "left",
+                        }}
+                      >
+                        <p
+                          style={{
+                            textTransform: "capitalize",
+                            fontSize: "12px",
+                          }}
+                        >
+                          {original.brand}
+                        </p>
+                      </div>
+                
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "left",
+                          margin: "auto 8px",
+                          gap: "20px",
+                          marginBottom: '1em'
+                        }}
+                      >
+                        <p
+                          style={{ fontSize: "12px", fontWeight: "bold" }}
+                        >
+                          {original.price}
+                        </p>
+                        
+                        <p style={{ fontSize: "12px", color: "orange" }}>
+                          {original.discount}% OFF
+                        </p>
+                      </div>
+                      <BagDiv>
+                        <ShoppingBagIcon />
+                        <a>
+                          <p>
+                            <b>ADD TO CART</b>
+                          </p>
+                        </a>
+                      </BagDiv>
+                    </DescDiv>
+                  </MainDiv>
+                )))
+                
+              }
+              {
+                !rec && 
+                <MainDiv
                   // onMouseEnter={() => {
                   //   handleEnter(ele);
                   // }}
@@ -276,6 +357,9 @@ const Visualise = () => {
                     </DescDiv>
                   
                 </MainDiv>
+
+              }
+              
 
                 {
                   showNext && currentIndex < recommended.length &&
