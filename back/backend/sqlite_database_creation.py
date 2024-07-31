@@ -1,9 +1,12 @@
 import sqlite3
 import pandas as pd
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Define the path to your CSV file
-csv_file_path = r'back\backend\products_final_data.csv'
+csv_file_path = 'products_final_data.csv'
+EXTRACTED_CLOTH_IMAGES = "C:\\Users\\a21ma\\OneDrive\\Desktop\\Code\\Projects\\Myntra\\backend\\extracted_cloth_images"
 
 # Read the CSV file into a pandas DataFrame
 df = pd.read_csv(csv_file_path)
@@ -11,8 +14,14 @@ df = pd.read_csv(csv_file_path)
 # Drop the unnamed columns
 df.drop(df.columns[[0, 1]], axis=1, inplace=True)
 
+df.dropna(inplace=True)
+
+# Update the 'extract_images' column
+df['extract_images'] = df['extract_images'].apply(lambda x: os.path.join(EXTRACTED_CLOTH_IMAGES, x))
+
+
 # Define the SQLite database directory
-sqlite_db_dir = './back/backend/sqlite_database'
+sqlite_db_dir = os.getenv("SQLITE_DB_PATH")
 
 # Check if the directory exists
 if not os.path.exists(sqlite_db_dir):

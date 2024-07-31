@@ -1,12 +1,19 @@
 import pandas as pd
+import os
+
+EXTRACTED_CLOTH_IMAGES_FOLDER = os.getenv("EXTRACTED_CLOTH_IMAGES_FOLDER")
 
 # Load and preprocess the data
-df = pd.read_csv(r'back\backend\products_final_data.csv')
+df = pd.read_csv(r"products_final_data.csv")
 df.dropna(inplace=True)
+
+# Update the 'extract_images' column
+df['extract_images'] = df['extract_images'].apply(lambda x: os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, x))
+
 df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
 
 # Ensure all required columns are present
-required_columns = ['product_id', 'price', 'rating', 'subcategory', 'img', 'name', 'main_category', 'target_audience', 'date', 'quantity','extract_images']
+required_columns = ['product_id', 'price', 'rating', 'subcategory', 'img', 'name', 'main_category', 'target_audience', 'date', 'quantity', 'extract_images', 'seller', 'discount']
 missing_columns = [col for col in required_columns if col not in df.columns]
 if missing_columns:
     raise ValueError(f"Missing columns in the DataFrame: {', '.join(missing_columns)}")
@@ -66,12 +73,12 @@ def get_top_products(main_category, target_audience):
     fashion_top_products = fashion_trend_products.groupby(['main_category', 'target_audience']).head(10).reset_index(drop=True)
 
     # Merge to include product details
-    fashion_top_products_details = fashion_top_products.merge(df[['name', 'product_id', 'price', 'rating', 'main_category', 'subcategory', 'img','extract_images']], on=['name', 'main_category'], how='left')
+    fashion_top_products_details = fashion_top_products.merge(df[['name', 'product_id', 'price', 'rating', 'main_category', 'subcategory', 'img', 'extract_images', 'seller', 'discount']], on=['name', 'main_category'], how='left')
     
     fashion_top_10 = fashion_top_products_details[
         (fashion_top_products_details['main_category'] == main_category) & 
         (fashion_top_products_details['target_audience'] == target_audience)
-    ][['name', 'product_id', 'price', 'main_category', 'subcategory', 'img','extract_images']].head(10).to_dict(orient='records')
+    ][['name', 'product_id', 'price', 'main_category', 'subcategory', 'img', 'extract_images', 'seller', 'discount']].to_dict(orient='records')
 
     result = {
         "seasonal_top_products": seasonal_top_10,
