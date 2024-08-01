@@ -8,7 +8,7 @@ df = pd.read_csv(r"products_final_data.csv")
 df.dropna(inplace=True)
 
 # Update the 'extract_images' column
-df['extract_images'] = df['extract_images'].apply(lambda x: os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, x))
+# df['extract_images'] = df['extract_images'].apply(lambda x: os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, x))
 
 df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
 
