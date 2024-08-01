@@ -70,13 +70,42 @@ const Visualise = () => {
         axios.post('http://localhost:8000/submit-feedback', feedback)
         .then(response => {
           console.log('Feedback submitted:', response.data);
-          const fitted_img = response.data.fitted_img    //path 
-          const recommended_details = response.data.recommended_details
-          setInitial(fitted_img);
-          setRecommended(recommended_details);
-          setCurrent(fitted_img)
-          setShowNext(false)
-          setCurrentIndex(0)
+          axios.post('http://localhost:8000/get_recommendations', {data: original}, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(response => {
+            console.log('Response received:', response.data);
+               const fitted_img = response.data.selected_image   //path 
+              
+               const recommended_details = response.data.recommended_images
+               console.log(fitted_img)
+               console.log(recommended_details)
+            setInitial(fitted_img);
+            setOriginal(item);
+            setRecommended(recommended_details);
+            setCurrent(fitted_img)
+            setDetails(item)
+            setShowNext(false)
+            setCurrentIndex(0)
+            navigate('/visualise');
+          })
+          .catch(error => {
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'Something went wrong!',
+              })
+            console.error('Error uploading data:', error);
+          });
+          // const fitted_img = response.data.fitted_img    //path 
+          // const recommended_details = response.data.recommended_details
+          // setInitial(fitted_img);
+          // setRecommended(recommended_details);
+          // setCurrent(fitted_img)
+          // setShowNext(false)
+          // setCurrentIndex(0)
         })
         .catch(error => {
           console.error('Error submitting feedback:', error);
