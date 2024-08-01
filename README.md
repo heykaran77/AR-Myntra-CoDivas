@@ -8,29 +8,29 @@ Today, most of the online shoppers are between the age bracket of 18-40, and thi
 
 To address these common issues, we aim to leverage the technological advancements Myntra has made in image search, as well as its advanced recommendation system, by incorporating our own innovative technologies in the following ways:
 
-- We developed an interactive platform prototype that helps users visualise their choice of clothing on themselves.
-- This prototype also provides visualizations of complementary outfit elements. For example, when a user selects a top, we will also show how different shoes, pants, and other accessories would look with it.
+- We propose to develop an interactive platform that helps users visualise their choice of clothing on themselves.
+- We will also provide visualizations of complementary outfit elements. For example, when a user selects a top, we will also show how different shoes, pants, and other accessories would look with it.
 - This is implemented through identification of current trends while keeping in mind user preferences and recommending the outfits accordingly.
-- Clicking ✔️ or ❌will help update the internal memory, allowing the platform to refine recommendations and suggest alternative items that better match the user's preferences.
-
+- Swiping left and right will help update the internal memory, allowing the platform to refine recommendations and suggest alternative items that better match the user's preferences.
 
 ## Installation & Usage
 
 To use this project, follow these steps:
 
 1. Backend:
-- cd back
-- pip install -r requirements.txt
+- pip install -r ./backend/requirements.txt
 - python ./backend/chromadb_database_creation.py
 - python ./backend/sqlite_database_creation.py
 - python ./backend/app.py
 
 2. Frontend: 
-- cd front
+- cd frontend
 - npm i
 - npm start
 
-3. Make your own Gemini API Key and put it in a .env file as "GEMINI_API_KEY"
+3. Make a .env file and copy all the elements of the .env.template file into it and fill it with the appropriate values for the enviornment variables and make the appropriate folders
+
+4. Unzip the extracted_cloth_images.zip file into the backend folder (the images should all then be inside a folder called extracted_cloth_images)
 
 ## Features
 
