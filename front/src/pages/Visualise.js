@@ -203,7 +203,7 @@ const Visualise = () => {
                   <MainDiv key={index}>
                     <CardDiv>
                       <img
-                        src={`${original.image}`}
+                        src={`${original.original_image}`}
                         style={{ width: "100%", height: "100%" }}
                       />
                     </CardDiv>
