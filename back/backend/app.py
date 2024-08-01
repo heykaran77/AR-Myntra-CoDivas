@@ -87,15 +87,15 @@ async def get_images(search: dict):
         "details": images_details
     }
 
-async def get_fitted_images(images):
+async def get_fitted_images(images, person_image_path):
     tasks = []
     for image in images:
         if image["main_category"] == "Top Wear":
-            tasks.append(viton_model(cloth_image_path=image["extract_images"], cloth_category="Upper-body"))
+            tasks.append(viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, image["extract_images"]), cloth_category="Upper-body", person_image_path=person_image_path))
         elif image["main_category"] == "Bottom Wear":
-            tasks.append(viton_model(cloth_image_path=image["extract_images"], cloth_category="Lower-body"))
+            tasks.append(viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, image["extract_images"]), cloth_category="Lower-body", person_image_path=person_image_path))
         elif image["main_category"] == "Dress (Full Length)":
-            tasks.append(viton_model(cloth_image_path=image["extract_images"], cloth_category="Dress"))
+            tasks.append(viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, image["extract_images"]), cloth_category="Dress", person_image_path=person_image_path))
                 
     results = await asyncio.gather(*tasks)
     
@@ -108,7 +108,7 @@ async def get_recommendations(data: dict):
     target_audience = data["target_audience"]
     extracted_image = data['extract_images']
 
-    extracted_image = await viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image), cloth_category=main_category)
+    extracted_image_path = await viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image), cloth_category=main_category)
 
     if main_category == "Top Wear":
         recommended_category = "Bottom Wear"
@@ -166,11 +166,11 @@ async def get_recommendations(data: dict):
         return {"error": "Invalid data format: Each item in 'fashion_trend_products' should be a dictionary"}
     
     # Get fitted images
-    fitted_images = await get_fitted_images(fashion_trend_products)
+    fitted_images = await get_fitted_images(fashion_trend_products,extracted_image_path)
     
     recommended_images_details = [
         {
-            "fitted_image": fitted_images["images"][i],
+            "fitted_image": fashion_trend_products[i]["extract_images"],   
             "original_image": fashion_trend_products[i]["img"],
             "seller": fashion_trend_products[i]["seller"],
             "price": fashion_trend_products[i]["price"],

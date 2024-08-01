@@ -114,7 +114,9 @@ async def to_b64(img_url: str) -> str:
             return base64.b64encode(data).decode('utf-8')
 
 def local_image_to_base64(image_path: str) -> str:
+    print(image_path)
     with open(image_path, "rb") as image_file:
+
         base64_encoded = base64.b64encode(image_file.read()).decode('utf-8')
     return base64_encoded
 
@@ -122,7 +124,7 @@ def local_image_to_base64(image_path: str) -> str:
 async def segmind_diffusion(cloth_image_url: str = None, model_image_url: str = 'https://levihsu-ootdiffusion.hf.space/file=/tmp/gradio/aa9673ab8fa122b9c5cdccf326e5f6fc244bc89b/model_8.png', cloth_image_path: str = None, model_image_path: str = None, clothing_category: str = None):
     api_key = os.getenv("SEGMIND_API_KEY")
     url = "https://api.segmind.com/v1/try-on-diffusion"
-
+    print(clothing_category)
     # Get model image base64
     model_image_b64 = local_image_to_base64(model_image_path) if model_image_path else await to_b64(model_image_url)
 

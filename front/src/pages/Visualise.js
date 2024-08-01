@@ -83,7 +83,7 @@ const Visualise = () => {
     }
   };
 
-  
+  console.log('Current is ',current)
   useEffect(() => {
     if (!current) {
       setCurrent(intial);
