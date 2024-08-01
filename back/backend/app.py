@@ -1,5 +1,4 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 import sqlite3
 import os
@@ -12,9 +11,6 @@ import base64
 
 
 app = FastAPI()
-
-image_directory = Path(__file__).parent / "fitted_images"
-app.mount("/fitted_images", StaticFiles(directory=image_directory), name="fitted_images")
 
 origins = [
     "http://localhost",
@@ -42,8 +38,8 @@ visited_items = set()
 async def get_images(search: dict):
     query = search["query"]
     print("Search Query:", query)
-    images, categories, names, sellers, prices, discounts  = get_images_using_llm(query)
-    image_1 = images[0]
+    extracted_images, images, categories, names, sellers, prices, discounts  = get_images_using_llm(query)
+    extracted_image_1 = extracted_images[0]
     print("Cloth Match:", names[0])
     category_1= categories[0]
     print(category_1)
@@ -51,7 +47,7 @@ async def get_images(search: dict):
     images_details = []
     images_details.append(
         {
-            "image": image_1,
+            "original_image": images,
             "name": names[0],
             "seller": sellers[0],
             "price": prices[0],
@@ -59,18 +55,18 @@ async def get_images(search: dict):
         }
     )
     
-    final_image = await viton_model(cloth_image_path=image_1, cloth_category=category_1) # along with these parameters, we can also pass the user image
+    final_image = await viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image_1), cloth_category=category_1) # along with these parameters, we can also pass the user image
     
     try:
-        image_2 = images[1]
+        extracted_image_2 = extracted_images[1]
         print("Cloth Match:", names[1])
         category_2 = categories[1]
         print(category_2)
-        final_image = await viton_model(cloth_image_path=image_2, cloth_category=category_2, person_image_path=final_image)
+        final_image_path = await viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image_2), cloth_category=category_2, person_image_path=final_image)
         
         images_details.append(
             {
-                "image": image_2,
+                "original_image": images[1],
                 "name": names[1],
                 "seller": sellers[1],
                 "price": prices[1],
@@ -81,9 +77,8 @@ async def get_images(search: dict):
         print(e)
         pass # this means there was only one image which is possible
     
-    
     return {
-        "image": f"{final_image}",
+        "fitted_image": extracted_image_2,
         "details": images_details
     }
 
@@ -107,14 +102,14 @@ async def get_recommendations(data: dict):
     main_category = data["main_category"]
     target_audience = data["target_audience"]
     extracted_image = data['extract_images']
-
+    
     if main_category == "Top Wear":
         category = "Upper-body"
     elif main_category == "Bottom Wear":
         category = "Lower-body"
     elif main_category == "Dress (Full Length)":
         category = "Dress"
-    
+        
     extracted_image_path = await viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image), cloth_category=category)
 
     if main_category == "Top Wear":
@@ -173,16 +168,16 @@ async def get_recommendations(data: dict):
         return {"error": "Invalid data format: Each item in 'fashion_trend_products' should be a dictionary"}
     
     # Get fitted images
-    fitted_images = await get_fitted_images(fashion_trend_products,extracted_image_path)
+    fitted_images = await get_fitted_images(fashion_trend_products, extracted_image_path)
     
     recommended_images_details = [
         {
-            "fitted_image": fashion_trend_products[i]["extract_images"],   
+            "name": fashion_trend_products[i]["name"],
+            "fitted_image": fashion_trend_products[i]["extract_images"],
             "original_image": fashion_trend_products[i]["img"],
             "seller": fashion_trend_products[i]["seller"],
             "price": fashion_trend_products[i]["price"],
             "discount": fashion_trend_products[i]["discount"],
-            "name": fashion_trend_products[i]['name']
         }
         for i in range(len(fashion_trend_products))
     ]
