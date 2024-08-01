@@ -108,7 +108,14 @@ async def get_recommendations(data: dict):
     target_audience = data["target_audience"]
     extracted_image = data['extract_images']
 
-    extracted_image_path = await viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image), cloth_category=main_category)
+    if main_category == "Top Wear":
+        category = "Upper-body"
+    elif main_category == "Bottom Wear":
+        category = "Lower-body"
+    elif main_category == "Dress (Full Length)":
+        category = "Dress"
+    
+    extracted_image_path = await viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image), cloth_category=category)
 
     if main_category == "Top Wear":
         recommended_category = "Bottom Wear"
