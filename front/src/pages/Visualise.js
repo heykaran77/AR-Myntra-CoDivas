@@ -43,12 +43,12 @@ const Visualise = () => {
   const [responseSearch,setResponseSearch] = useState([])
   const [rec,setRec] = useState(false)
 
-  const handleClick = (feedback,category) => {
+  const handleClick = (feedbackCurrent,category) => {
     console.log(recommended)
     if (currentIndex < recommended.length) {
       setFeedback((prevFeedback) => {
         const updatedFeedback = { ...prevFeedback };
-        if (feedback === 'positive') {
+        if (feedbackCurrent === 'Positive') {
           updatedFeedback.positive_feedback.push(category);
         } else {
           updatedFeedback.negative_feedback.push(category);
@@ -66,6 +66,7 @@ const Visualise = () => {
       
     }
     else{
+        console.log(feedback)
         axios.post('http://localhost:8000/submit-feedback', feedback)
         .then(response => {
           console.log('Feedback submitted:', response.data);
@@ -165,7 +166,7 @@ const Visualise = () => {
           <Grid item xs={8}>
             <Grid container>
             <Grid item lg={3.5} md={3.5} sm={4} xs={4} className='flex justify-center items-center'>
-            <button onClick={() => handleClick('Negative',details.subcategory)}>
+            <button onClick={() => handleClick('Negative',recommended[currentIndex].subcategory)}>
               <svg className="h-16 w-16 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="15" y1="9" x2="9" y2="15" />
@@ -183,7 +184,7 @@ const Visualise = () => {
         </Grid>
 
           <Grid item lg={3.5} md={3.5} sm={4} xs={4} className='flex justify-center items-center'>
-            <button onClick={() => handleClick('Positive',details.subcategory)}>
+            <button onClick={() => handleClick('Positive',recommended[currentIndex].subcategory)}>
               <svg className="h-16 w-16 text-green-500" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" />
                 <circle cx="12" cy="12" r="9" />

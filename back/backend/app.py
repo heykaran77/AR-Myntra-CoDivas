@@ -131,7 +131,7 @@ async def get_recommendations(data: dict):
     fashion_trend_products = trendy_products["fashion_trend_products"]
     
     # Filter out products that have been visited
-    filtered_products = [product for product in fashion_trend_products if "img" in product]
+    filtered_products = [product for product in fashion_trend_products if "img" in product and "img" not in visited_items]
     
     # Update visited items
     visited_items.update([product["img"] for product in filtered_products])
@@ -177,6 +177,7 @@ async def get_recommendations(data: dict):
     recommended_images_details = [
         {
             "name": fashion_trend_products[i]["name"],
+            "subcategory": fashion_trend_products[i]["subcategory"],
             "fitted_image": fashion_trend_products[i]["extract_images"],
             "original_image": fashion_trend_products[i]["img"],
             "seller": fashion_trend_products[i]["seller"],
@@ -193,7 +194,7 @@ async def get_recommendations(data: dict):
     }
 
 
-@app.post("/feedback")
+@app.post("/submit-feedback")
 async def feedback(positive_feedback: List[str], negative_feedback: List[str]):
     print(positive_feedback)
     print(negative_feedback)
