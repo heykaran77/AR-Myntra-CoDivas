@@ -33,7 +33,8 @@ def get_data_from_db(clothing_item):
     print("Location of Image:", os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image))
     return {
         "clothing_item_found": result["documents"],
-        "image": os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image),
+        "extracted_image": extracted_image,
+        "image": result["metadatas"][0][0]["img"],
         "main_category": result["metadatas"][0][0]["main_category"],
         "seller": result["metadatas"][0][0]["seller"],
         "price": result["metadatas"][0][0]["price"],
@@ -61,6 +62,7 @@ def get_images_using_llm(query):
     sellers = []
     prices = []
     discounts = []
+    extracted_images = []
     
     for item in items:
         result = get_data_from_db(item)
@@ -69,6 +71,7 @@ def get_images_using_llm(query):
         sellers.append(result["seller"])
         prices.append(result["price"])
         discounts.append(result["discount"])
+        extracted_images.append(result["extracted_image"])
         
         category = result["main_category"]
         
@@ -84,7 +87,7 @@ def get_images_using_llm(query):
         categories.append(category)
         
     # print(images)
-    return images, categories, names, sellers, prices, discounts
+    return extracted_images, images, categories, names, sellers, prices, discounts
 
 
 def ootdiffusion_model(garment_img, clothing_category, person_img = 'https://levihsu-ootdiffusion.hf.space/file=/tmp/gradio/aa9673ab8fa122b9c5cdccf326e5f6fc244bc89b/model_8.png'):

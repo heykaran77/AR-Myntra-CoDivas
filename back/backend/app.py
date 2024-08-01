@@ -9,6 +9,7 @@ from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import base64
+from typing import Optional
 
 
 app = FastAPI()
@@ -44,6 +45,7 @@ async def get_images(search: dict):
     print("Search Query:", query)
     extracted_images, images, categories, names, sellers, prices, discounts  = get_images_using_llm(query)
     extracted_image_1 = extracted_images[0]
+    extracted_image_final = extracted_image_1
     print("Cloth Match:", names[0])
     category_1= categories[0]
     print(category_1)
@@ -63,6 +65,7 @@ async def get_images(search: dict):
     
     try:
         extracted_image_2 = extracted_images[1]
+        extracted_image_final = extracted_image_2
         print("Cloth Match:", names[1])
         category_2 = categories[1]
         print(category_2)
@@ -82,7 +85,7 @@ async def get_images(search: dict):
         pass # this means there was only one image which is possible
     
     return {
-        "fitted_image": extracted_image_2,
+        "fitted_image": extracted_image_final,
         "details": images_details
     }
 
@@ -131,11 +134,11 @@ async def get_recommendations(data: dict):
     fashion_trend_products = trendy_products["fashion_trend_products"]
     
     # Filter out products that have been visited
-    filtered_products = [product for product in fashion_trend_products if "img" in product and "img" not in visited_items]
+    filtered_products = [product for product in fashion_trend_products if "img" in product and product['img'] not in visited_items]
     
     # Update visited items
     visited_items.update([product["img"] for product in filtered_products])
-    print(user_preferences)
+    print(visited_items)
     
     def adjust_weights():
         weights = {}
