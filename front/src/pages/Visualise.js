@@ -99,7 +99,7 @@ const Visualise = () => {
     axios.post('http://localhost:8000/get_images', { query:search })
         .then(response => {
           console.log('Feedback submitted:', response.data);
-             const fitted_img = response.data.fitted_img
+             const fitted_img = response.data.fitted_image
              const details = response.data.details
              setCurrent(fitted_img)
              setOriginal(details)
@@ -203,7 +203,7 @@ const Visualise = () => {
                   <MainDiv key={index}>
                     <CardDiv>
                       <img
-                        src={`${original.img}`}
+                        src={`${original.image}`}
                         style={{ width: "100%", height: "100%" }}
                       />
                     </CardDiv>
@@ -218,7 +218,7 @@ const Visualise = () => {
                         }}
                       >
                         <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                          {original.brand}
+                          {original.seller}
                         </p>
                       </div>
                       <div
@@ -235,7 +235,7 @@ const Visualise = () => {
                             fontSize: "12px",
                           }}
                         >
-                          {original.brand}
+                          {original.name[0]}
                         </p>
                       </div>
                 
@@ -299,7 +299,7 @@ const Visualise = () => {
                         }}
                       >
                         <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                          {original.brand}
+                          {original.seller}
                         </p>
                       </div>
                       <div
@@ -316,7 +316,7 @@ const Visualise = () => {
                             fontSize: "12px",
                           }}
                         >
-                          {original.brand}
+                          {original.name}
                           
                         </p>
                       </div>
@@ -354,7 +354,6 @@ const Visualise = () => {
                       </a>
                       
                     </BagDiv>
-
                     </DescDiv>
                   
                 </MainDiv>

@@ -42,7 +42,7 @@ const Details = () => {
         })
         .then(response => {
           console.log('Response received:', response.data);
-             const fitted_img = response.data.fitted_image    //path 
+             const fitted_img = response.data.selected_image   //path 
             
              const recommended_details = response.data.recommended_images
              console.log(fitted_img)
