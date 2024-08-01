@@ -6,18 +6,18 @@ load_dotenv()
 
 # Define the path to your CSV file
 csv_file_path = 'products_final_data.csv'
-EXTRACTED_CLOTH_IMAGES = "C:\\Users\\a21ma\\OneDrive\\Desktop\\Code\\Projects\\Myntra\\backend\\extracted_cloth_images"
+EXTRACTED_CLOTH_IMAGES = os.getenv("EXTRACTED_CLOTH_IMAGES_FOLDER")
 
 # Read the CSV file into a pandas DataFrame
 df = pd.read_csv(csv_file_path)
 
 # Drop the unnamed columns
-df.drop(df.columns[[0, 1]], axis=1, inplace=True)
+df.drop(df.columns[[0]], axis=1, inplace=True)
 
 df.dropna(inplace=True)
 
 # Update the 'extract_images' column
-df['extract_images'] = df['extract_images'].apply(lambda x: os.path.join(EXTRACTED_CLOTH_IMAGES, x))
+df['extract_images'] = df['extract_images'].apply(lambda x: x)
 
 
 # Define the SQLite database directory

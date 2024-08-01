@@ -1,4 +1,5 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 import sqlite3
 import os
@@ -11,6 +12,9 @@ import base64
 
 
 app = FastAPI()
+
+image_directory = Path(__file__).parent / "fitted_images"
+app.mount("/fitted_images", StaticFiles(directory=image_directory), name="fitted_images")
 
 origins = [
     "http://localhost",
@@ -27,6 +31,7 @@ app.add_middleware(
 
 UPLOAD_DIR = os.getenv("UPLOADED_USER_IMAGES_FOLDER")
 SQLITE_DB_PATH = os.path.join(os.getenv("SQLITE_DB_PATH"), "myntra.db")
+EXTRACTED_CLOTH_IMAGES_FOLDER = os.getenv("EXTRACTED_CLOTH_IMAGES_FOLDER")
 
 Path(UPLOAD_DIR).mkdir(parents=True, exist_ok=True)
 
@@ -103,6 +108,8 @@ async def get_recommendations(data: dict):
     target_audience = data["target_audience"]
     extracted_image = data['extract_images']
 
+    extracted_image = await viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image), cloth_category=main_category)
+
     if main_category == "Top Wear":
         recommended_category = "Bottom Wear"
         
@@ -168,6 +175,7 @@ async def get_recommendations(data: dict):
             "seller": fashion_trend_products[i]["seller"],
             "price": fashion_trend_products[i]["price"],
             "discount": fashion_trend_products[i]["discount"],
+            "name": fashion_trend_products[i]['name']
         }
         for i in range(len(fashion_trend_products))
     ]
@@ -219,7 +227,7 @@ def get_myntra_data():
         conn = sqlite3.connect(SQLITE_DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM products")
+        cursor.execute("SELECT * FROM products WHERE extract_images IS NOT NULL")
         rows = cursor.fetchall()
         conn.close()
 

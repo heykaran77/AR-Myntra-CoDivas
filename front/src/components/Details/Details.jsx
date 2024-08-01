@@ -33,7 +33,6 @@ const Details = () => {
 
     
     
-    useEffect(() => {
       const handleSubmit = (item) => {
         console.log('Submitting data:', item);   
         axios.post('http://localhost:8000/get_recommendations', item, {
@@ -43,9 +42,11 @@ const Details = () => {
         })
         .then(response => {
           console.log('Response received:', response.data);
-             const fitted_img = response.data.fitted_img    //path 
+             const fitted_img = response.data.fitted_image    //path 
             
-             const recommended_details = response.data.recommended_details
+             const recommended_details = response.data.recommended_images
+             console.log(fitted_img)
+             console.log(recommended_details)
           setInitial(fitted_img);
           setOriginal(item);
           setRecommended(recommended_details);
@@ -64,7 +65,7 @@ const Details = () => {
       };
   
       
-    }); // Run the effect when `item` changes
+   // Run the effect when `item` changes
 
     const handleNavigation = () => {
       navigate('/visualise');
@@ -233,7 +234,7 @@ const Details = () => {
                       
                     >
                       {/* <ShoppingBagIcon /> */}
-                      <a onClick={handleNavigation}>
+                      <a onClick={handleSubmit(selectedImage)}>
                       <p>
                         <b>TRY ON</b>
                       </p>

@@ -44,6 +44,7 @@ const Visualise = () => {
   const [rec,setRec] = useState(false)
 
   const handleClick = (feedback,category) => {
+    console.log(recommended)
     if (currentIndex < recommended.length) {
       setFeedback((prevFeedback) => {
         const updatedFeedback = { ...prevFeedback };
@@ -87,7 +88,7 @@ const Visualise = () => {
     if (!current) {
       setCurrent(intial);
     } else if (showNext && currentIndex < recommended.length) {
-      const currentImage = recommended[currentIndex].fitted_img;
+      const currentImage = recommended[currentIndex].fitted_image;
       setCurrent(currentImage);
     }
   }, [currentIndex, recommended, showNext]);
@@ -175,7 +176,7 @@ const Visualise = () => {
 
                   <Grid item lg={5} md={5} sm={8} xs={8} className='bg-blue-100 flex justify-center items-center' sx={{ height: '80vh', borderRadius: '1em' }}>
           {current ? (
-            <img src={current} alt="Current" className="w-full h-full object-cover" style={{ borderRadius: '1em' }} />
+            <img src={`http://127.0.0.1:8000/fitted_images/${current}`} alt="Current" className="w-full h-full object-cover" style={{ borderRadius: '1em' }} />
           ) : (
             <p>Loading...</p>
           )}
@@ -375,7 +376,7 @@ const Visualise = () => {
                 >
                   <CardDiv >
                     <img
-                      src={`${recommended[currentIndex].img}`}
+                      src={`${recommended[currentIndex].original_image}`}
                       style={{ width: "100%", height: "100%" }}
                     ></img>
                   </CardDiv>
@@ -390,7 +391,7 @@ const Visualise = () => {
                         }}
                       >
                         <p style={{ fontWeight: "bold", fontSize: "12px" }}>
-                        {recommended[currentIndex].brand}
+                        {recommended[currentIndex].seller}
                           
                         </p>
                       </div>
