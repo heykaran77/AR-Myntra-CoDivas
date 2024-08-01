@@ -1,4 +1,5 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 import sqlite3
 import os
@@ -11,6 +12,9 @@ import base64
 
 
 app = FastAPI()
+
+image_directory = Path(__file__).parent / "fitted_images"
+app.mount("/fitted_images", StaticFiles(directory=image_directory), name="fitted_images")
 
 origins = [
     "http://localhost",
