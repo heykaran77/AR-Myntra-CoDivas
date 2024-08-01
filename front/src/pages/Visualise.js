@@ -99,7 +99,7 @@ const Visualise = () => {
     axios.post('http://localhost:8000/get_images', { query:search })
         .then(response => {
           console.log('Feedback submitted:', response.data);
-             const fitted_img = response.data.image
+             const fitted_img = response.data.fitted_image
              const details = response.data.details
              setCurrent(fitted_img)
              setOriginal(details)
@@ -354,7 +354,6 @@ const Visualise = () => {
                       </a>
                       
                     </BagDiv>
-
                     </DescDiv>
                   
                 </MainDiv>
