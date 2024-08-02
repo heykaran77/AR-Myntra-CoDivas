@@ -9,6 +9,7 @@ from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import base64
+from typing import Optional
 
 
 app = FastAPI()
@@ -30,6 +31,7 @@ app.add_middleware(
 )
 
 UPLOAD_DIR = os.getenv("UPLOADED_USER_IMAGES_FOLDER")
+UPLOADED_PERSON_IMAGE_NAME = None
 SQLITE_DB_PATH = os.path.join(os.getenv("SQLITE_DB_PATH"), "myntra.db")
 EXTRACTED_CLOTH_IMAGES_FOLDER = os.getenv("EXTRACTED_CLOTH_IMAGES_FOLDER")
 
@@ -44,6 +46,7 @@ async def get_images(search: dict):
     print("Search Query:", query)
     extracted_images, images, categories, names, sellers, prices, discounts  = get_images_using_llm(query)
     extracted_image_1 = extracted_images[0]
+    extracted_image_final = extracted_image_1
     print("Cloth Match:", names[0])
     category_1= categories[0]
     print(category_1)
@@ -59,10 +62,11 @@ async def get_images(search: dict):
         }
     )
     
-    final_image = await viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image_1), cloth_category=category_1) # along with these parameters, we can also pass the user image
+    final_image = await viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image_1), cloth_category=category_1, person_image_path=os.path.join(UPLOAD_DIR, UPLOADED_PERSON_IMAGE_NAME)) # along with these parameters, we can also pass the user image
     
     try:
         extracted_image_2 = extracted_images[1]
+        extracted_image_final = extracted_image_2
         print("Cloth Match:", names[1])
         category_2 = categories[1]
         print(category_2)
@@ -82,7 +86,7 @@ async def get_images(search: dict):
         pass # this means there was only one image which is possible
     
     return {
-        "fitted_image": extracted_image_2,
+        "fitted_image": extracted_image_final,
         "details": images_details
     }
 
@@ -114,7 +118,7 @@ async def get_recommendations(data: dict):
     elif main_category == "Dress (Full Length)":
         category = "Dress"
         
-    extracted_image_path = await viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image), cloth_category=category)
+    extracted_image_path = await viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image), cloth_category=category, person_image_path=os.path.join(UPLOAD_DIR, UPLOADED_PERSON_IMAGE_NAME))
 
     if main_category == "Top Wear":
         recommended_category = "Bottom Wear"
@@ -131,11 +135,9 @@ async def get_recommendations(data: dict):
     fashion_trend_products = trendy_products["fashion_trend_products"]
     
     # Filter out products that have been visited
-    filtered_products = [product for product in fashion_trend_products if "img" in product and "img" not in visited_items]
+    filtered_products = [product for product in fashion_trend_products if "img" in product and product['img'] not in visited_items]
     
-    # Update visited items
-    visited_items.update([product["img"] for product in filtered_products])
-    print(user_preferences)
+    
     
     def adjust_weights():
         weights = {}
@@ -166,6 +168,10 @@ async def get_recommendations(data: dict):
     # seasonal_top_products = sorted(seasonal_top_products, key=weighted_sort, reverse=True)[0]
     fashion_trend_products = sorted(filtered_products, key=weighted_sort, reverse=True)[:3]
     print("fashion: ",len(fashion_trend_products))
+    
+    # Update visited items
+    visited_items.update([product["img"] for product in fashion_trend_products])
+    print("Visited_Items:", visited_items)
     # print(fashion_trend_products)
     # Verify the data passed to get_fitted_images
     if any(not isinstance(product, dict) for product in fashion_trend_products):
@@ -215,6 +221,10 @@ async def get_user_image(file: UploadFile = File(...)):
         if file.content_type not in ["image/jpeg", "image/png", "image/gif"]:
             raise HTTPException(status_code=400, detail="Unsupported file type.")
 
+        global UPLOADED_PERSON_IMAGE_NAME
+        UPLOADED_PERSON_IMAGE_NAME = file.filename
+        print(UPLOADED_PERSON_IMAGE_NAME)
+        
         # Define the path where the image will be saved
         image_path = os.path.join(UPLOAD_DIR, file.filename)
 
