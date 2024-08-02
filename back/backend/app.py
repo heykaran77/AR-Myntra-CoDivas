@@ -136,9 +136,7 @@ async def get_recommendations(data: dict):
     # Filter out products that have been visited
     filtered_products = [product for product in fashion_trend_products if "img" in product and product['img'] not in visited_items]
     
-    # Update visited items
-    visited_items.update([product["img"] for product in filtered_products])
-    print(visited_items)
+    
     
     def adjust_weights():
         weights = {}
@@ -169,6 +167,10 @@ async def get_recommendations(data: dict):
     # seasonal_top_products = sorted(seasonal_top_products, key=weighted_sort, reverse=True)[0]
     fashion_trend_products = sorted(filtered_products, key=weighted_sort, reverse=True)[:3]
     print("fashion: ",len(fashion_trend_products))
+    
+    # Update visited items
+    visited_items.update([product["img"] for product in fashion_trend_products])
+    print("Visited_Items:", visited_items)
     # print(fashion_trend_products)
     # Verify the data passed to get_fitted_images
     if any(not isinstance(product, dict) for product in fashion_trend_products):
