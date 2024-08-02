@@ -31,6 +31,7 @@ app.add_middleware(
 )
 
 UPLOAD_DIR = os.getenv("UPLOADED_USER_IMAGES_FOLDER")
+UPLOADED_PERSON_IMAGE_NAME = None
 SQLITE_DB_PATH = os.path.join(os.getenv("SQLITE_DB_PATH"), "myntra.db")
 EXTRACTED_CLOTH_IMAGES_FOLDER = os.getenv("EXTRACTED_CLOTH_IMAGES_FOLDER")
 
@@ -61,7 +62,7 @@ async def get_images(search: dict):
         }
     )
     
-    final_image = await viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image_1), cloth_category=category_1) # along with these parameters, we can also pass the user image
+    final_image = await viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image_1), cloth_category=category_1, person_image_path=os.path.join(UPLOAD_DIR, UPLOADED_PERSON_IMAGE_NAME)) # along with these parameters, we can also pass the user image
     
     try:
         extracted_image_2 = extracted_images[1]
@@ -117,7 +118,7 @@ async def get_recommendations(data: dict):
     elif main_category == "Dress (Full Length)":
         category = "Dress"
         
-    extracted_image_path = await viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image), cloth_category=category)
+    extracted_image_path = await viton_model(cloth_image_path=os.path.join(EXTRACTED_CLOTH_IMAGES_FOLDER, extracted_image), cloth_category=category, person_image_path=os.path.join(UPLOAD_DIR, UPLOADED_PERSON_IMAGE_NAME))
 
     if main_category == "Top Wear":
         recommended_category = "Bottom Wear"
@@ -220,6 +221,10 @@ async def get_user_image(file: UploadFile = File(...)):
         if file.content_type not in ["image/jpeg", "image/png", "image/gif"]:
             raise HTTPException(status_code=400, detail="Unsupported file type.")
 
+        global UPLOADED_PERSON_IMAGE_NAME
+        UPLOADED_PERSON_IMAGE_NAME = file.filename
+        print(UPLOADED_PERSON_IMAGE_NAME)
+        
         # Define the path where the image will be saved
         image_path = os.path.join(UPLOAD_DIR, file.filename)
 

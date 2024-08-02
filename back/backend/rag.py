@@ -123,13 +123,17 @@ def local_image_to_base64(image_path: str) -> str:
         base64_encoded = base64.b64encode(image_file.read()).decode('utf-8')
     return base64_encoded
 
-
+    
 async def segmind_diffusion(cloth_image_url: str = None, model_image_url: str = 'https://levihsu-ootdiffusion.hf.space/file=/tmp/gradio/aa9673ab8fa122b9c5cdccf326e5f6fc244bc89b/model_8.png', cloth_image_path: str = None, model_image_path: str = None, clothing_category: str = None):
     api_key = os.getenv("SEGMIND_API_KEY")
     url = "https://api.segmind.com/v1/try-on-diffusion"
-    print(clothing_category)
+    # print(model_image_path)
     # Get model image base64
-    model_image_b64 = local_image_to_base64(model_image_path) if model_image_path else await to_b64(model_image_url)
+    # model_image_b64 = local_image_to_base64(model_image_path) if model_image_path else await to_b64(model_image_url)
+    if model_image_path:
+        model_image_b64 = local_image_to_base64(model_image_path)
+    else:
+        model_image_b64 = await to_b64(model_image_url)
 
     # Get cloth image base64
     cloth_image_b64 = local_image_to_base64(cloth_image_path) if cloth_image_path else await to_b64(cloth_image_url)
@@ -174,15 +178,16 @@ async def viton_model(cloth_image: str = None, cloth_category: str = None, perso
     
     if model == "1":
         if cloth_image:
-            if person_image:
-                result = ootdiffusion_model(cloth_image, cloth_category, person_image)
-            else:
+            if person_image_path:
                 result = ootdiffusion_model(cloth_image, cloth_category, person_image_path)
-        else:
-            if person_image:
-                result = ootdiffusion_model(cloth_image_path, cloth_category, person_image)
             else:
+                result = ootdiffusion_model(cloth_image, cloth_category, person_image)
+        else:
+            if person_image_path:
                 result = ootdiffusion_model(cloth_image_path, cloth_category, person_image_path)
+            else:
+                result = ootdiffusion_model(cloth_image_path, cloth_category, person_image)
+                
                 
     elif model == "2":
         if cloth_category == "Upper-body":
@@ -190,6 +195,8 @@ async def viton_model(cloth_image: str = None, cloth_category: str = None, perso
         elif cloth_category == "Lower-body":
             cloth_category = "Lower body"
         print(cloth_category)
+        
+        print("Person Image Path:", person_image_path)
         result = await segmind_diffusion(cloth_image_url=cloth_image, model_image_url=person_image, clothing_category=cloth_category, cloth_image_path=cloth_image_path, model_image_path=person_image_path)
     
     return result
