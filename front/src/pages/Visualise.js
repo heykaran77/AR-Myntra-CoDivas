@@ -2,7 +2,7 @@ import { AppBar, Grid, TextField, Typography } from '@mui/material'
 import React from 'react'
 import { Box } from '@mui/system';
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
-
+import Swal from 'sweetalert2'
 // import { Button } from 'flowbite-react';
 import { Button, Card } from 'flowbite-react';
 import { MainDiv, CardDiv, DescDiv ,CountryDiv , BundlesDiv ,SizeDiv ,ContainerDiv , TopDiv} from "../components/cards/cardItems";
@@ -43,12 +43,12 @@ const Visualise = () => {
   const [responseSearch,setResponseSearch] = useState([])
   const [rec,setRec] = useState(false)
 
-  const handleClick = (feedback,category) => {
+  const handleClick = (feedbackCurrent,category) => {
     console.log(recommended)
     if (currentIndex < recommended.length) {
       setFeedback((prevFeedback) => {
         const updatedFeedback = { ...prevFeedback };
-        if (feedback === 'positive') {
+        if (feedbackCurrent === 'Positive') {
           updatedFeedback.positive_feedback.push(category);
         } else {
           updatedFeedback.negative_feedback.push(category);
@@ -66,21 +66,50 @@ const Visualise = () => {
       
     }
     else{
-        axios.post('http://localhost:8000/submit-feedback', feedback)
+      console.log(feedback)
+      console.log(original)
+      axios.post('http://localhost:8000/submit-feedback', feedback)
+      .then(response => {
+        console.log('Feedback submitted:', response.data);
+        axios.post('http://localhost:8000/get_recommendations', original, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
         .then(response => {
-          console.log('Feedback submitted:', response.data);
-          const fitted_img = response.data.fitted_img    //path 
-          const recommended_details = response.data.recommended_details
+          console.log('Response received:', response.data);
+             const fitted_img = response.data.selected_image   //path 
+            
+             const recommended_details = response.data.recommended_images
+             console.log(fitted_img)
+             console.log(recommended_details)
           setInitial(fitted_img);
+          setOriginal(original);
           setRecommended(recommended_details);
           setCurrent(fitted_img)
+          setDetails(original)
           setShowNext(false)
           setCurrentIndex(0)
         })
         .catch(error => {
-          console.error('Error submitting feedback:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong!',
+            })
+          console.error('Error uploading data:', error);
         });
-    }
+        // const fitted_img = response.data.fitted_img    //path 
+        // const recommended_details = response.data.recommended_details
+        // setInitial(fitted_img);
+        // setRecommended(recommended_details);
+        // setCurrent(fitted_img)
+        // setShowNext(false)
+        // setCurrentIndex(0)
+      })
+      .catch(error => {
+        console.error('Error submitting feedback:', error);
+      });}
   };
 
   console.log('Current is ',current)
@@ -165,14 +194,25 @@ const Visualise = () => {
           <Grid item xs={8}>
             <Grid container>
             <Grid item lg={3.5} md={3.5} sm={4} xs={4} className='flex justify-center items-center'>
-            <button onClick={() => handleClick('Negative',details.subcategory)}>
-              <svg className="h-16 w-16 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="15" y1="9" x2="9" y2="15" />
-                <line x1="9" y1="9" x2="15" y2="15" />
-              </svg>
-            </button>
-          </Grid>
+  <button 
+    onClick={() => {
+      if (currentIndex < recommended.length) {
+        handleClick('Negative', recommended[currentIndex].subcategory);
+
+      }
+      else {
+        handleClick('Negative', 'Shirt');
+      }
+    }}
+  >
+    <svg className="h-16 w-16 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="15" y1="9" x2="9" y2="15" />
+      <line x1="9" y1="9" x2="15" y2="15" />
+    </svg>
+  </button>
+</Grid>
+
 
                   <Grid item lg={5} md={5} sm={8} xs={8} className='bg-blue-100 flex justify-center items-center' sx={{ height: '80vh', borderRadius: '1em' }}>
           {current ? (
@@ -183,7 +223,15 @@ const Visualise = () => {
         </Grid>
 
           <Grid item lg={3.5} md={3.5} sm={4} xs={4} className='flex justify-center items-center'>
-            <button onClick={() => handleClick('Positive',details.subcategory)}>
+            <button onClick={() => {
+      if (currentIndex < recommended.length) {
+        handleClick('Positive', recommended[currentIndex].subcategory);
+
+      }
+      else {
+        handleClick('Positive', 'Shirt');
+      }
+    }}>
               <svg className="h-16 w-16 text-green-500" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" />
                 <circle cx="12" cy="12" r="9" />

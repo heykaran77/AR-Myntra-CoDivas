@@ -234,10 +234,10 @@ const Details = () => {
                       
                     >
                       {/* <ShoppingBagIcon /> */}
-                      <a onClick={handleSubmit(selectedImage)}>
-                      <p>
-                        <b>TRY ON</b>
-                      </p>
+                      <a onClick={() => handleSubmit(selectedImage)}>
+                        <p>
+                          <b>TRY ON</b>
+                        </p>
                       </a>
                       
                     </TryONDiv>
