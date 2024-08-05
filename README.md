@@ -42,7 +42,7 @@ To use this project, follow these steps:
 - For the product catalog, we utilized a dataset of Myntra products sourced from [Kaggle](https://www.kaggle.com/datasets/ronakbokaria/myntra-products-dataset), initially containing approximately 1 million items with images.
 - We refined this dataset by first reducing it to 100,000 items and further to 30,000 by focusing exclusively on clothing items, and few accessories. 
 - To ensure relevance, we conducted transformations such as identifying the gender using LLMs and categorizing items into classifications like top wear, bottomwear, and dresses.
-- Since real-world transactional data was not readily available, we simulated and created dummy transactional data to mimic real-world scenarios. Final Products Dataset (Source Code for Data Generation). We then stored the embeddings for RAG in chromadb and in Sqlite for retrieval from frontend
+- Since real-world transactional data was not readily available, we simulated and created dummy transactional data to mimic real-world scenarios. [Final Products Dataset](https://github.com/aasmithadhani/Myntra-CoDivas/blob/main/products_final_data.csv). We then stored the embeddings for RAG in chromadb and in Sqlite for retrieval from frontend
 
 2. Trend Identification:
 - We believe that Myntra, with over 60 million active users, provides a rich dataset from which current and emerging trends can be identified.
