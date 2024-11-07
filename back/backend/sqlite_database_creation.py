@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Define the path to your CSV file
-csv_file_path = 'products_final_data.csv'
+csv_file_path = 'C:/Users/karan singh/Desktop/AR_Try/Myntra-CoDivas/back/backend/products_final_data.csv'
 EXTRACTED_CLOTH_IMAGES = os.getenv("EXTRACTED_CLOTH_IMAGES_FOLDER")
 
 # Read the CSV file into a pandas DataFrame

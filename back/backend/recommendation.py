@@ -4,7 +4,7 @@ import os
 EXTRACTED_CLOTH_IMAGES_FOLDER = os.getenv("EXTRACTED_CLOTH_IMAGES_FOLDER")
 
 # Load and preprocess the data
-df = pd.read_csv(r"products_final_data.csv")
+df = pd.read_csv(r"C:/Users/karan singh/Desktop/AR_Try/Myntra-CoDivas/back/backend/products_final_data.csv")
 df.dropna(inplace=True)
 
 # Update the 'extract_images' column

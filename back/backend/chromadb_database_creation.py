@@ -15,7 +15,7 @@ collection = chromadb_client.get_or_create_collection(name="myntra_data", embedd
 def add_data_to_db():
     
     def get_data_from_csv():
-        df = pd.read_csv("products_final_data.csv")
+        df = pd.read_csv("C:/Users/karan singh/Desktop/AR_Try/Myntra-CoDivas/back/backend/products_final_data.csv")
         print(df)
         
         # Drop rows where the column "extract_images" is equal to "NA"
