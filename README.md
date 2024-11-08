@@ -1,10 +1,10 @@
-## Solution
+## Solution!
 
 To address these common issues, we aim to leverage the technological advancements Myntra has made in image search, as well as its advanced recommendation system, by incorporating our own innovative technologies in the following ways:
 
 - We propose to develop an interactive platform that helps users visualise their choice of clothing on themselves.
 - We will also provide visualizations of complementary outfit elements. For example, when a user selects a top, we will also show how different shoes, pants, and other accessories would look with it.
-- This is implemented through identification of current trends while keeping in mind user preferences and recommending the outfits accordingly.
+- This is implemented through the identification of current trends while keeping in mind user preferences and recommending the outfits accordingly.
 - Swiping left and right will help update the internal memory, allowing the platform to refine recommendations and suggest alternative items that better match the user's preferences.
 ![image](https://github.com/heykaran77/AR-Myntra-CoDivas/blob/main/Application%20screenshots/Catalog%20Image.png)
 
@@ -23,7 +23,7 @@ To use this project, follow these steps:
 - ```npm i```
 - ```npm start```
 
-3. Make a .env file and copy all the elements of the .env.template file into it and fill it with the appropriate values for the enviornment variables and make the appropriate folders
+3. Make a .env file and copy all the elements of the .env.template file into it and fill it with the appropriate values for the environment variables and make the appropriate folders
 
 4. Unzip the extracted_cloth_images.zip file into the backend folder (the images should all then be inside a folder called extracted_cloth_images)
 
