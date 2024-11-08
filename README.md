@@ -1,5 +1,3 @@
-
-
 ## Solution
 
 To address these common issues, we aim to leverage the technological advancements Myntra has made in image search, as well as its advanced recommendation system, by incorporating our own innovative technologies in the following ways:
@@ -15,15 +13,15 @@ To address these common issues, we aim to leverage the technological advancement
 To use this project, follow these steps:
 
 1. Backend:
-- pip install -r ./backend/requirements.txt
-- python ./backend/chromadb_database_creation.py
-- python ./backend/sqlite_database_creation.py
-- python ./backend/app.py
+- ```pip install -r ./backend/requirements.txt```
+- ```python ./backend/chromadb_database_creation.py```
+- ```python ./backend/sqlite_database_creation.py```
+- ```python ./backend/app.py```
 
 2. Frontend: 
-- cd frontend
-- npm i
-- npm start
+- ```cd frontend```
+- ```npm i```
+- ```npm start```
 
 3. Make a .env file and copy all the elements of the .env.template file into it and fill it with the appropriate values for the enviornment variables and make the appropriate folders
 
